@@ -1,22 +1,13 @@
 # Реклама
 
-Используются только `ysdk.adv.showFullscreenAdv()` и `ysdk.adv.showRewardedVideo()`.
+## Sticky
 
-## Fullscreen
+На loading, SDK init, save loading и сразу после `ready()` sticky не запрашивается. Первое осмысленное действие — открытие списка диалогов или конкретной истории. Тогда PlatformService проверяет `getBannerAdvStatus()`: уже видимый banner не вызывается повторно, `reason` считается недоступностью, иначе вызывается `showBannerAdv()`.
 
-Текущая история вызывает interstitial только у узла с `adBreak` — между крупными главами до следующей сцены. Флаг `ad_seen_<node>` не даёт повторить показ после reload. Рекламы нет между сообщениями или сразу после каждого выбора.
+При подтверждённом status layout резервирует область снизу для mobile portrait и справа для landscape/desktop. Production не рисует собственную рекламу. DevelopmentPlatform только логирует явную debug simulation.
 
-## Rewarded
+## Fullscreen и rewarded
 
-Награда необязательна:
+Interstitial остаётся на сценарном `adBreak` и защищён save-флагом от повторения. Rewarded используется для косметической темы и node-specific hint. Hint ID сохраняется в `revealedHints`; текст берётся из текущей локали. Он появляется только если callback `onRewarded` был получен до закрытия. Close без reward и error возвращают `false`.
 
-- случайный мягкий намёк на тон одного ответа;
-- косметическая тема «Фиолетовый туман».
-
-Основная история и все концовки доступны без rewarded video.
-
-## Пауза
-
-При `onOpen`: gameplay stop, аудио и игровой сценарий остановлены. При `onClose/onError`: gameplay start, состояние сохраняется. Недоступная реклама просто возвращает `false`.
-
-Официальная документация: [Advertising](https://yandex.com/dev/games/doc/en/sdk/sdk-adv).
+Platform ad coordinator не допускает два fullscreen-вызова одновременно, останавливает GameplayAPI, временно скрывает sticky, затем восстанавливает его только если banner был запрошен пользователем. UI ставит звук и typing на паузу. Ошибка рекламы не меняет progress.

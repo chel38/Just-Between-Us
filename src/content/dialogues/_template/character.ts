@@ -14,9 +14,9 @@ export const templateCharacter: Character = {
   writingProfile: {
     capitalization: 'standard',
     emojiFrequency: 'low',
-    messageLength: 'mixed',
-    punctuation: 'casual',
-    doubleMessages: true,
-    typoChance: 0.01,
+    doubleMessageFrequency: 'medium',
+    punctuationStyle: 'casual',
+    averageMessageLength: 'mixed',
+    typoFrequency: 'rare',
   },
 };

@@ -13,11 +13,11 @@ export const camilaCharacters: Record<'ru' | 'en', Character> = {
     summary: 'Замечает детали, не любит голосовые и шутит, когда ей страшно.',
     writingProfile: {
       capitalization: 'mixed',
-      emojiFrequency: 'low',
-      messageLength: 'mixed',
-      punctuation: 'casual',
-      doubleMessages: true,
-      typoChance: 0.01,
+      emojiFrequency: 'medium',
+      doubleMessageFrequency: 'medium',
+      punctuationStyle: 'casual',
+      averageMessageLength: 'short',
+      typoFrequency: 'rare',
     },
   },
   en: {
@@ -32,11 +32,11 @@ export const camilaCharacters: Record<'ru' | 'en', Character> = {
     summary: 'Notices details, hates voice notes, and jokes when she is scared.',
     writingProfile: {
       capitalization: 'mixed',
-      emojiFrequency: 'low',
-      messageLength: 'mixed',
-      punctuation: 'casual',
-      doubleMessages: true,
-      typoChance: 0.01,
+      emojiFrequency: 'medium',
+      doubleMessageFrequency: 'medium',
+      punctuationStyle: 'casual',
+      averageMessageLength: 'short',
+      typoFrequency: 'rare',
     },
   },
 };

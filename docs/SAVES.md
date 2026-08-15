@@ -1,21 +1,15 @@
-# Сохранения
+# Сохранения v2
 
-`GameSave` содержит `saveVersion`, все диалоги, настройки, открытые концовки, глобальные флаги, последний открытый диалог и `updatedAt`.
+Новый local key: `just-between-us-save-v2`. Legacy key `between-lines-save-v1` читается, мигрируется и остаётся как страховочная копия; результат сразу записывается в новый key.
 
-## Частота
+Новый Yandex Player Data key: `justBetweenUsSave`. Если его нет, `YandexPlatform` читает legacy `betweenLinesSave`; SaveEngine прогоняет ту же последовательную миграцию и записывает v2 через новый provider key.
 
-Локальная копия записывается после каждого выбора, сообщения, флага, окончания и настройки. Cloud write объединяется в окно 2 секунды, чтобы не превышать лимит `player.setData()` (100 запросов за 5 минут).
+`CURRENT_SAVE_VERSION = 2`. Миграция v1:
 
-## Local + Cloud
+- переносит legacy `text` в `fallbackText`;
+- восстанавливает script `sourceId` из `scriptMessageId`;
+- восстанавливает player-choice `sourceId` по порядку `choiceHistory`;
+- создаёт `revealedHints` для каждого dialogue progress;
+- сохраняет settings, отношения, flags, узел, историю и endings.
 
-- гость: local storage;
-- авторизованный игрок: local + `player.getData/setData`;
-- при загрузке выбирается более свежая копия;
-- ошибка облака не блокирует игру;
-- `pagehide` просит немедленный flush.
-
-## Миграции
-
-`migrateSave()` применяет версии по порядку и дополняет новые настройки значениями по умолчанию. Следующую схему добавляйте как `if (version < 2) ...`, после чего увеличивайте `CURRENT_SAVE_VERSION`.
-
-Лимит cloud data — 200 KB. При росте transcript рекомендуется хранить старые сообщения как компактные ID и восстанавливать текст из контента.
+Локальная запись происходит после каждого сообщения/choice/setting. Cloud writes объединяются в окно две секунды; `pagehide` запрашивает немедленный flush. При загрузке выбирается более свежая local/cloud копия.

@@ -28,7 +28,7 @@ export const camilaRuNodes: DialogueNode[] = [
   {
     id: 'warm_1', chapter: 1, messages: [
       c('warm_1_a', 'не открывай.'),
-      c('warm_1_b', 'Это прозвучало резче, чем я хотела. Привет.'),
+      c('warm_1_b', 'Это прозвучало резче, чем я хотела 😅 Привет.'),
       c('warm_1_c', 'На конверте есть синяя полоска? И маленькая цифра 47 в углу?'),
     ], choices: [
       { id: 'warm_return', text: 'Всё на месте. Могу просто принести его тебе.', next: 'warm_2', effects: { trust: 2, respect: 1, setFlags: ['offered_return'] } },
@@ -39,7 +39,7 @@ export const camilaRuNodes: DialogueNode[] = [
   {
     id: 'warm_2', chapter: 1, messages: [
       c('warm_2_a', 'Спасибо. Серьёзно.'),
-      c('warm_2_b', 'Я оставила его не у той двери. Похоже, сегодня у меня талант к катастрофам.'),
+      c('warm_2_b', 'Я оставила его не у той двери. Похоже, сегодня у меня талант к катастрофам 🙃'),
       c('warm_2_c', 'Только странно: я не подписывала конверт своими инициалами.'),
       c('warm_2_d', 'Он холодный? Как будто лежал на улице?'),
     ], choices: [
@@ -50,7 +50,7 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'bold_1', chapter: 1, messages: [
-      c('bold_1_a', 'Под твоим ковриком?'),
+      c('bold_1_a', 'Под твоим ковриком? 🤨'),
       c('bold_1_b', 'Я не оставляла.'),
       c('bold_1_c', 'Покажи бородку ключа. Только не весь кадр — номер квартиры не снимай.'),
     ], choices: [
@@ -73,7 +73,7 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'flirt_1', chapter: 1, messages: [
-      c('flirt_1_a', 'Мрачный флирт — это свечи на кладбище.'),
+      c('flirt_1_a', 'Мрачный флирт — это свечи на кладбище 😏'),
       c('flirt_1_b', 'А ключ под ковриком — плохой день и, возможно, уголовное дело.'),
       c('flirt_1_c', 'Он латунный? На головке насечка в виде половины круга?'),
     ], choices: [
@@ -84,7 +84,7 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'flirt_2', chapter: 1, messages: [
-      c('flirt_2_a', 'Ладно. Одно очко за самообладание.'),
+      c('flirt_2_a', 'Ладно. Одно очко за самообладание 😏'),
       c('flirt_2_b', 'Этим ключом моя сестра закрыла квартиру 47 в последний раз.'),
       c('flirt_2_c', 'Через сутки она исчезла.'),
       c('flirt_2_d', 'Шесть лет назад. Так что давай пока без свидания, хорошо?'),
@@ -130,7 +130,7 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'risky_2', chapter: 1, messages: [
-      c('risky_2_a', 'Хорошо. Дышу.'),
+      c('risky_2_a', 'Хорошо. Дышу 😌'),
       c('risky_2_b', 'Имя на стене было напечатано или написано от руки?'),
       c('risky_2_c', 'И дата рядом — сегодняшняя?'),
       c('risky_2_d', 'От ответа зависит, врёт мне один человек или уже двое.'),
@@ -144,7 +144,7 @@ export const camilaRuNodes: DialogueNode[] = [
     id: 'crossing', chapter: 2, messages: [
       c('crossing_warm', 'Ты мог просто сделать вид, что ничего не видел. Спасибо, что написал.', { conditions: { requiresFlags: ['warm_start'] } }),
       c('crossing_bold', 'Ненавижу признавать, но твой тон сейчас полезнее моей паники.', { conditions: { requiresFlags: ['bold_start'] } }),
-      c('crossing_flirt', 'И да: если мы переживём этот вечер, я пересмотрю своё решение насчёт свидания.', { conditions: { requiresFlags: ['flirt_start'], minRelationship: { attraction: 3 } } }),
+      c('crossing_flirt', 'И да: если мы переживём этот вечер, я пересмотрю своё решение насчёт свидания 👀', { conditions: { requiresFlags: ['flirt_start'], minRelationship: { attraction: 3 } } }),
       c('crossing_careful', 'Ты единственный сегодня спросил не «что там?», а «безопасно ли это». Я заметила.', { conditions: { requiresFlags: ['careful_start'] } }),
       c('crossing_risky', 'Ты уже видел больше, чем должен был. Значит, половинчатые ответы только навредят.', { conditions: { requiresFlags: ['risky_start'] } }),
       c('crossing_a', 'Квартира 47 принадлежала моей сестре Алине. Ей было 34, когда она пропала.'),
@@ -160,7 +160,7 @@ export const camilaRuNodes: DialogueNode[] = [
   {
     id: 'stairwell', chapter: 2, messages: [
       s('stairwell_status', 'Камила в сети'),
-      c('stairwell_a', 'Я на месте. Серое пальто, бумажный стакан, крайне неубедительное спокойствие.'),
+      c('stairwell_a', 'Я на месте. Серое пальто, бумажный стакан, крайне неубедительное спокойствие 😅'),
       c('stairwell_b', 'Не подходи сразу. На пролёте ниже мужчина в синей куртке.'),
       c('stairwell_c', 'Это Марк, управляющий. Тот, у кого вчера был ключ.'),
       c('stairwell_d', 'Он делает вид, что чинит датчик. Датчик сняли в мае.'),
@@ -175,8 +175,8 @@ export const camilaRuNodes: DialogueNode[] = [
     id: 'threshold', chapter: 2, messages: [
       c('threshold_a', 'Он ушёл.'),
       c('threshold_observe', 'И посмотрел не на меня. На твою дверь.', { conditions: { requiresFlags: ['observed_mark'] } }),
-      c('threshold_test', 'Ты был прав. Стакан ещё падал, а он уже смотрел на тебя.', { conditions: { requiresFlags: ['tested_mark'] } }),
-      c('threshold_spoke', '«Свет проверяю». В доме с автоматическим журналом неисправностей. Милый человек.', { conditions: { requiresFlags: ['spoke_to_mark'] } }),
+      c('threshold_test', 'Ты был прав. Стакан ещё падал, а он уже смотрел на тебя 👀', { conditions: { requiresFlags: ['tested_mark'] } }),
+      c('threshold_spoke', '«Свет проверяю». В доме с автоматическим журналом неисправностей. Милый человек 😂', { conditions: { requiresFlags: ['spoke_to_mark'] } }),
       c('threshold_b', 'Я открыла конверт. Внутри снимок квартиры 47, сделанный сегодня утром.'),
       c('threshold_c', 'На снимке стол. На столе папка с твоим именем.'),
       c('threshold_d', 'Теперь плохая часть: почерк на обороте похож на почерк Алины.'),
@@ -206,7 +206,7 @@ export const camilaRuNodes: DialogueNode[] = [
     id: 'recording', chapter: 3, messages: [
       c('recording_a', 'Нашла диктофон.'),
       c('recording_b', 'На нём одна запись. Голос Алины: «Если Камила привела тринадцатого, значит, она опять решила за другого человека».'),
-      c('recording_c', 'Тринадцатый — это ты.'),
+      c('recording_c', 'Тринадцатый — это ты 😳'),
       c('recording_d', 'Мне нужно сказать тебе кое-что раньше, чем запись скажет за меня.'),
       c('recording_e', 'Я знала о твоей папке. Не всё. Но знала, что она существует.'),
     ], choices: [
@@ -236,7 +236,7 @@ export const camilaRuNodes: DialogueNode[] = [
       s('midnight_status_off', 'Камила не в сети', { kind: 'statusChanged' }),
       { id: 'midnight_pause', sender: 'system', kind: 'delay', delayMs: 900, text: 'пауза' },
       s('midnight_status_on', 'Камила в сети', { kind: 'statusChanged' }),
-      c('midnight_a', 'В коридоре кто-то есть.'),
+      c('midnight_a', 'В коридоре кто-то есть 👀'),
       c('midnight_b', 'Не Марк. Шаги легче.'),
       c('midnight_c', 'Под дверью появилась записка: «Вторую комнату нельзя закрыть снаружи».'),
       c('midnight_d', 'Это фраза Алины. Она говорила так про чужую память.'),
@@ -343,14 +343,14 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'end_good_dawn', chapter: 5, endingId: 'good_dawn', messages: [
-      c('egd_a', 'Договорились.'), c('egd_b', 'И спасибо, что каждый раз возвращал мне мой собственный выбор.'),
+      c('egd_a', 'Договорились 🙂'), c('egd_b', 'И спасибо, что каждый раз возвращал мне мой собственный выбор.'),
       c('egd_c', 'Я у подъезда. Без ключей. С двумя стаканами кофе.'), s('egd_s', 'История завершена'),
     ],
   },
   {
     id: 'end_good_equal', chapter: 5, endingId: 'good_equal', messages: [
-      c('ege_a', 'Справедливо.'), c('ege_b', 'Тогда начнём с простого: мне 31, я терпеть не могу голосовые и правда хочу выпить с тобой кофе.'),
-      c('ege_c', 'Это не тест.)'), s('ege_s', 'История завершена'),
+      c('ege_a', 'Справедливо.'), c('ege_b', 'Тогда начнём с простого: мне 31, я терпеть не могу голосовые и правда хочу выпить с тобой кофе ❤️'),
+      c('ege_c', 'Это не тест.) 🤭'), s('ege_s', 'История завершена'),
     ],
   },
   {
@@ -380,7 +380,7 @@ export const camilaRuNodes: DialogueNode[] = [
   },
   {
     id: 'end_secret', chapter: 5, endingId: 'secret_0714', messages: [
-      s('es_status', '07:14 · станция Слюдянка'), c('es_a', 'Она здесь.'),
+      s('es_status', '07:14 · станция Слюдянка'), c('es_a', 'Она здесь 😳'),
       c('es_b', 'Седая прядь, красный шарф. Живая.'), c('es_c', 'Алина сказала, что оставила конверт, чтобы я наконец попросила помощи, а не выбрала помощника.'),
       c('es_d', 'Я ещё не знаю, прощу ли её. Но впервые это действительно моё решение.'),
       c('es_e', 'Ты рядом?'), s('es_s', 'Секретная концовка открыта'),

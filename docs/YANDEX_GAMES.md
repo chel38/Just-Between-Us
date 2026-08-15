@@ -1,29 +1,17 @@
 # Yandex Games
 
-## Подключение
+Production загружает `/sdk.js`, вызывает `YaGames.init()` и работает только через `PlatformService`. Локально используется DevelopmentPlatform; `?yandex=1` включает попытку реального SDK, `?device=tv` — TV simulation.
 
-Production-адаптер динамически загружает `/sdk.js` — это актуальный относительный путь для архива, размещённого на серверах Yandex Games. При локальной разработке используется `DevelopmentPlatform`.
+`LoadingAPI.ready()` вызывается после загрузки сохранения и первого интерактивного render. Sticky при этом не вызывается. `GameplayAPI.start()` соответствует активному видимому диалогу; меню, модальные окна, скрытая вкладка и реклама вызывают stop.
 
-Официальная документация: [Connection and usage](https://yandex.com/dev/games/doc/en/sdk/sdk-about).
+Тип устройства берётся из `sdk.deviceInfo().type`: desktop/mobile/tablet/tv. Fullscreen спрятан за `screen.fullscreen.request()/exit()/status`; запрос на TV делается только из пользовательского действия.
 
-## Game Ready
+В консоли Yandex:
 
-`features.LoadingAPI.ready()` вызывается после загрузки сохранения, удаления собственного loading screen и commit интерактивного React-интерфейса. Вызов не привязан к искусственному таймеру.
+1. Включите `Use the API to display a sticky-banner`.
+2. Mobile portrait: `At the bottom`.
+3. Mobile landscape: `On the right`.
+4. Desktop sticky: включён, позиция справа.
+5. Отметьте поддерживаемые desktop/mobile/tablet/TV платформы после ручной проверки.
 
-## Gameplay API
-
-`GameplayAPI.start()` отправляется при открытом активном диалоге и видимой вкладке. `stop()` — в меню, скрытой вкладке и перед рекламой. После закрытия рекламы вызывается `start()`.
-
-Документация: [Game loading and gameplay markup](https://yandex.com/dev/games/doc/en/sdk/sdk-game-events).
-
-## Игрок и язык
-
-Авторизация не обязательна. `player.isAuthorized()` определяет, можно ли использовать cloud data. Язык берётся из `ysdk.environment.i18n.lang`, пользователь может переопределить его в настройках.
-
-## Проверка на платформе
-
-1. Загрузите релизный ZIP в консоль Yandex Games.
-2. Откройте draft с debug panel.
-3. Убедитесь, что индикатор loader становится зелёным одновременно с доступным меню.
-4. Проверьте gameplay-индикатор в диалоге, меню, скрытой вкладке и рекламе.
-5. Проверьте гостевой запуск без auth dialog.
+Сам iframe рекламного блока CSS игры не перемещает. Layout лишь резервирует безопасную область после подтверждённого SDK status. Подробнее: [ADS.md](ADS.md) и [TV_SUPPORT.md](TV_SUPPORT.md).

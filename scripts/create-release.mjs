@@ -5,7 +5,10 @@ import JSZip from 'jszip';
 const root = process.cwd();
 const dist = join(root, 'dist');
 const outputDir = join(root, 'release');
-const outputFile = join(outputDir, 'just-between-us-v0.1-chat-alpha-yandex.zip');
+const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
+const version = String(packageJson.version);
+if (!/^[0-9A-Za-z.-]+$/.test(version)) throw new Error(`Invalid package version for release path: ${version}`);
+const outputFile = join(outputDir, `just-between-us-v${version}-yandex.zip`);
 const zip = new JSZip();
 
 async function addDirectory(directory) {

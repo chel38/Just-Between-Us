@@ -6,6 +6,9 @@ export type RelationshipKey =
   | 'curiosity'
   | 'respect';
 
+export type DialogueId = string;
+export type TranscriptSourceType = 'script-message' | 'player-choice' | 'system' | 'runtime';
+
 export type Relationship = Record<RelationshipKey, number>;
 
 export type DialogueStatus =
@@ -51,6 +54,7 @@ export interface ScriptMessage {
   typingInterrupted?: boolean;
   reaction?: string;
   quote?: string;
+  quoteSourceId?: string;
   image?: string;
   alt?: string;
   conditions?: Conditions;
@@ -73,6 +77,7 @@ export interface DialogueNode {
   endingId?: string;
   onEnter?: Effects;
   adBreak?: boolean;
+  hint?: string;
 }
 
 export interface Ending {
@@ -87,10 +92,10 @@ export interface Ending {
 export interface WritingProfile {
   capitalization: 'standard' | 'mixed' | 'lowercase';
   emojiFrequency: 'none' | 'low' | 'medium';
-  messageLength: 'short' | 'mixed' | 'long';
-  punctuation: 'casual' | 'precise' | 'minimal';
-  doubleMessages: boolean;
-  typoChance: number;
+  doubleMessageFrequency: 'none' | 'low' | 'medium' | 'high';
+  punctuationStyle: 'casual' | 'precise' | 'minimal';
+  averageMessageLength: 'short' | 'mixed' | 'long';
+  typoFrequency: 'none' | 'rare' | 'occasional';
 }
 
 export interface Character {
@@ -117,13 +122,21 @@ export interface DialogueDefinition {
 
 export interface TranscriptMessage {
   id: string;
+  sourceType?: TranscriptSourceType;
+  sourceId?: string;
+  fallbackText?: string;
+  /** @deprecated Kept only while migrating v1 saves. */
   scriptMessageId?: string;
   sender: 'player' | 'character' | 'system';
-  text: string;
+  /** @deprecated Runtime rendering resolves sourceId; legacy saves may still contain text. */
+  text?: string;
   kind: MessageKind;
   timestamp: number;
   status?: 'sent' | 'delivered' | 'read';
   reaction?: string;
+  quoteSourceId?: string;
+  quoteFallbackText?: string;
+  /** @deprecated Legacy quote fallback. */
   quote?: string;
   image?: string;
   alt?: string;
@@ -141,11 +154,13 @@ export interface DialogueProgress {
   endingsUnlocked: string[];
   awaitingChoice: boolean;
   processedMessageIds: string[];
+  revealedHints: Record<string, boolean>;
   startedAt: number | null;
   updatedAt: number;
   endingId?: string;
   unread: number;
   characterStatus?: string;
+  characterStatusSourceId?: string;
   characterAvatar?: string;
 }
 

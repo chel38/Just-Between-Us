@@ -16,7 +16,7 @@
 
 ### Название
 
-Между строк
+Только между нами
 
 ### Короткое описание
 
@@ -24,7 +24,7 @@
 
 ### SEO-описание
 
-«Между строк» — сюжетная игра в формате мессенджера с нелинейными диалогами, психологической интригой, памятью решений и семью концовками.
+«Только между нами» — сюжетная игра в формате мессенджера с нелинейными диалогами, психологической интригой, памятью решений и семью концовками.
 
 ### Описание
 
@@ -38,7 +38,7 @@
 
 ### Title
 
-Between the Lines
+Just Between Us
 
 ### Short description
 
@@ -46,7 +46,7 @@ An interactive story messenger where every reply changes trust, the mystery, and
 
 ### SEO description
 
-Between the Lines is a nonlinear messenger story with psychological intrigue, remembered choices, and seven endings.
+Just Between Us is a nonlinear messenger story with psychological intrigue, remembered choices, and seven endings.
 
 ### Description
 

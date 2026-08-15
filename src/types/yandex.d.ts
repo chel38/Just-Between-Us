@@ -11,7 +11,26 @@ interface YandexGamesSdk {
     LoadingAPI?: { ready(): Promise<void> | void };
     GameplayAPI?: { start(): Promise<void> | void; stop(): Promise<void> | void };
   };
+  deviceInfo(): {
+    type: 'desktop' | 'mobile' | 'tablet' | 'tv';
+    isMobile(): boolean;
+    isDesktop(): boolean;
+    isTablet(): boolean;
+    isTV(): boolean;
+  };
+  screen: {
+    fullscreen: {
+      readonly STATUS_ON: 'on';
+      readonly STATUS_OFF: 'off';
+      readonly status: 'on' | 'off';
+      request(): Promise<void>;
+      exit(): Promise<void>;
+    };
+  };
   adv: {
+    getBannerAdvStatus(): Promise<{ stickyAdvIsShowing: boolean; reason?: 'ADV_IS_NOT_CONNECTED' | 'UNKNOWN' }>;
+    showBannerAdv(): Promise<{ stickyAdvIsShowing: boolean; reason?: 'ADV_IS_NOT_CONNECTED' | 'UNKNOWN' }>;
+    hideBannerAdv(): Promise<{ stickyAdvIsShowing: boolean }>;
     showFullscreenAdv(options: {
       callbacks: {
         onOpen?(): void;

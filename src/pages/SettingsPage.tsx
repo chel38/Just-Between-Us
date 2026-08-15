@@ -1,4 +1,4 @@
-import { BellRing, Languages, MessageSquareText, MoonStar, Palette, Volume2, Waves } from 'lucide-react';
+import { ArrowLeft, BellRing, Languages, MessageSquareText, MoonStar, Palette, Volume2, Waves } from 'lucide-react';
 import type { UiStrings } from '../content/locales';
 import type { GameSettings } from '../types/save';
 
@@ -7,13 +7,15 @@ interface SettingsPageProps {
   settings: GameSettings;
   onChange: (settings: GameSettings) => void;
   onUnlockTheme: () => Promise<void>;
+  onBack?: () => void;
 }
 
-export function SettingsPage({ ui, settings, onChange, onUnlockTheme }: SettingsPageProps) {
+export function SettingsPage({ ui, settings, onChange, onUnlockTheme, onBack }: SettingsPageProps) {
   const patch = (value: Partial<GameSettings>) => onChange({ ...settings, ...value });
   const violetUnlocked = settings.unlockedThemes.includes('violet');
   return (
     <div className="page settings-page">
+      {onBack && <button className="back-link" onClick={onBack} data-tv-focus><ArrowLeft />{ui.back}</button>}
       <header className="page-header"><div><span className="eyebrow">{ui.gameTitle}</span><h1>{ui.settings}</h1></div></header>
       <SettingsGroup icon={<MessageSquareText />} title={ui.messages}>
         <div className="setting-row setting-row--stack"><label>{ui.messageSpeed}</label><div className="segmented">

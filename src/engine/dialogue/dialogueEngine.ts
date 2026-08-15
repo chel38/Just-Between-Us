@@ -27,6 +27,7 @@ export class DialogueEngine {
       endingsUnlocked: [],
       awaitingChoice: true,
       processedMessageIds: [],
+      revealedHints: {},
       startedAt: null,
       updatedAt: Date.now(),
       unread: 0,
@@ -37,6 +38,14 @@ export class DialogueEngine {
     const node = this.definition.nodes.find((candidate) => candidate.id === id);
     if (!node) throw new Error(`[DialogueEngine] Unknown node: ${id}`);
     return node;
+  }
+
+  getScriptMessage(id: string): ScriptMessage | undefined {
+    for (const node of this.definition.nodes) {
+      const message = node.messages.find((candidate) => candidate.id === id);
+      if (message) return message;
+    }
+    return undefined;
   }
 
   availableChoices(progress: DialogueProgress): DialogueChoice[] {
@@ -59,8 +68,10 @@ export class DialogueEngine {
     const destination = this.getNode(choice.next);
     const playerMessage: TranscriptMessage = {
       id: `player-${choice.id}-${now}`,
+      sourceType: 'player-choice',
+      sourceId: choice.id,
+      fallbackText: choice.text,
       sender: 'player',
-      text: choice.text,
       kind: 'message',
       timestamp: now,
       status: 'read',
@@ -97,18 +108,22 @@ export class DialogueEngine {
 
     const transcript: TranscriptMessage = {
       id: `script-${message.id}-${now}`,
+      sourceType: message.sender === 'system' ? 'system' : 'script-message',
+      sourceId: message.id,
+      fallbackText: text,
       scriptMessageId: message.id,
       sender: message.sender === 'system' ? 'system' : 'character',
-      text,
       kind: message.kind ?? 'message',
       timestamp: now,
       reaction: message.reaction,
+      quoteSourceId: message.quoteSourceId,
+      quoteFallbackText: message.quote,
       quote: message.quote,
       image: message.image,
       alt: message.alt,
     };
     const characterState = message.kind === 'statusChanged'
-      ? { characterStatus: text }
+      ? { characterStatus: text, characterStatusSourceId: message.id }
       : message.kind === 'avatarChanged' && message.image
         ? { characterAvatar: message.image }
         : {};

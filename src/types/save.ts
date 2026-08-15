@@ -25,7 +25,7 @@ export interface GameSave {
   updatedAt: number;
 }
 
-export const CURRENT_SAVE_VERSION = 1;
+export const CURRENT_SAVE_VERSION = 2;
 
 export const DEFAULT_SETTINGS: GameSettings = {
   soundEnabled: true,

@@ -1,42 +1,38 @@
-import { CheckCheck, ChevronRight, LockKeyhole } from 'lucide-react';
-import type { UiStrings } from '../content/locales';
-import type { DialogueDefinition, DialogueProgress } from '../types/dialogue';
+import { CheckCheck, ChevronRight } from 'lucide-react';
 import { Avatar } from '../components/Avatar';
+import type { UiLanguage, UiStrings } from '../content/locales';
+import { resolveLastMessage } from '../engine/dialogue/transcriptResolver';
+import type { DialogueDefinition, DialogueProgress } from '../types/dialogue';
 
 interface ChatsPageProps {
   ui: UiStrings;
-  dialogue: DialogueDefinition;
-  progress?: DialogueProgress;
-  onOpen: () => void;
+  language: UiLanguage;
+  dialogues: DialogueDefinition[];
+  progresses: Record<string, DialogueProgress>;
+  onOpen: (dialogueId: string) => void;
 }
 
-export function ChatsPage({ ui, dialogue, progress, onOpen }: ChatsPageProps) {
-  const last = progress?.history.at(-1)?.text;
-  const isComplete = progress?.status.startsWith('completed') || progress?.status === 'blocked';
+export function ChatsPage({ ui, language, dialogues, progresses, onOpen }: ChatsPageProps) {
   return (
     <div className="page list-page">
-      <header className="page-header"><div><span className="eyebrow">{ui.gameSubtitle}</span><h1>{ui.dialogues}</h1></div><span className="header-count">3</span></header>
+      <header className="page-header"><div><span className="eyebrow">{ui.gameSubtitle}</span><h1>{ui.dialogues}</h1></div><span className="header-count">{dialogues.length}</span></header>
       <div className="chat-list">
-        <button className="chat-row chat-row--active" onClick={onOpen}>
-          <Avatar src={dialogue.character.avatar} name={dialogue.character.name} size="md" online={!isComplete} />
-          <span className="chat-row__body">
-            <span className="chat-row__top"><strong>{dialogue.character.name}</strong><time>{progress ? new Date(progress.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ui.newStory}</time></span>
-            <span className="chat-row__bottom"><span>{last ?? ui.noMessages}</span>{progress?.unread ? <b>{progress.unread}</b> : progress ? <CheckCheck size={16} /> : <ChevronRight size={16} />}</span>
-            <small>{isComplete ? ui.completed : progress?.history.length ? ui.continueStory : ui.statusNew}</small>
-          </span>
-        </button>
-        <LockedChat name={ui.language === 'Language' ? 'Alice' : 'Алиса'} teaser={ui.language === 'Language' ? 'The message that arrives tomorrow' : 'Сообщение, которое придёт завтра'} accent="peach" ui={ui} />
-        <LockedChat name={ui.language === 'Language' ? 'Vera' : 'Вера'} teaser={ui.language === 'Language' ? 'No one remembers this number' : 'Этот номер никто не помнит'} accent="blue" ui={ui} />
+        {dialogues.map((dialogue, index) => {
+          const progress = progresses[dialogue.id];
+          const last = resolveLastMessage(progress?.history, dialogue);
+          const isComplete = progress?.status.startsWith('completed') || progress?.status === 'blocked';
+          return (
+            <button key={dialogue.id} className="chat-row chat-row--active" onClick={() => onOpen(dialogue.id)} autoFocus={index === 0} data-tv-focus>
+              <Avatar src={dialogue.character.avatar} name={dialogue.character.name} size="md" online={!isComplete} onlineLabel={ui.online} />
+              <span className="chat-row__body">
+                <span className="chat-row__top"><strong>{dialogue.character.name}</strong><time>{progress ? new Date(progress.updatedAt).toLocaleTimeString(language === 'ru' ? 'ru-RU' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : ui.newStory}</time></span>
+                <span className="chat-row__bottom"><span>{last ?? ui.noMessages}</span>{progress?.unread ? <b>{progress.unread}</b> : progress ? <CheckCheck size={16} /> : <ChevronRight size={16} />}</span>
+                <small>{isComplete ? ui.completed : progress?.history.length ? ui.continueStory : ui.statusNew}</small>
+              </span>
+            </button>
+          );
+        })}
       </div>
-    </div>
-  );
-}
-
-function LockedChat({ name, teaser, accent, ui }: { name: string; teaser: string; accent: string; ui: UiStrings }) {
-  return (
-    <div className="chat-row chat-row--locked">
-      <div className={`avatar-placeholder avatar-placeholder--${accent}`}>{name[0]}</div>
-      <span className="chat-row__body"><span className="chat-row__top"><strong>{name}</strong><LockKeyhole size={14} /></span><span className="chat-row__bottom"><span>{teaser}</span></span><small>{ui.locked}</small></span>
     </div>
   );
 }

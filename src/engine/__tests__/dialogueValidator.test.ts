@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { getCamilaDialogue } from '../../content/dialogues/camila';
+import { getDialogues } from '../../content/dialogues';
 import { DialogueEngine } from '../dialogue/dialogueEngine';
-import { validateDialogue } from '../dialogue/dialogueValidator';
+import { validateDialogue, validateDialoguePair, validateDialogueRegistry } from '../dialogue/dialogueValidator';
 
 describe('Camila dialogue graph', () => {
   it.each(['ru', 'en'] as const)('validates the %s graph without broken paths', (language) => {
@@ -33,6 +34,11 @@ describe('Camila dialogue graph', () => {
     ]).join(' ');
     expect(text).not.toMatch(/[А-Яа-яЁё]/);
     expect(text).not.toContain('Translation unavailable');
+  });
+
+  it('keeps stable IDs and localized hints across RU and EN', () => {
+    expect(() => validateDialoguePair(getCamilaDialogue('ru'), getCamilaDialogue('en'))).not.toThrow();
+    expect(() => validateDialogueRegistry(getDialogues('ru'))).not.toThrow();
   });
 });
 

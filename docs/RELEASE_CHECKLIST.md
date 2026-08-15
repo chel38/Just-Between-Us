@@ -8,6 +8,8 @@
 - [x] local/cloud progress;
 - [x] язык через environment;
 - [x] реклама только через SDK;
+- [x] sticky API mode: нет initial show, layout резервируется только после user action;
+- [x] rewarded hint выдаётся только после reward callback;
 - [x] gameplay и звук останавливаются.
 
 ## Gameplay
@@ -22,6 +24,7 @@
 ## UI
 
 - [x] desktop двухколоночный режим;
+- [x] полноэкранный TV mode, overscan padding и управление стрелками/OK/Back;
 - [x] mobile portrait 390×844;
 - [x] mobile landscape 844×390;
 - [x] safe-area и `100dvh`-совместимая оболочка;
@@ -44,3 +47,4 @@
 3. Проверьте размер и отсутствие кириллицы/пробелов в путях.
 4. Загрузите в Yandex Games и повторите SDK-проверки в debug panel.
 5. Загрузите файлы из `promo/` и укажите корректный рейтинг 18+ в консоли.
+6. Включите sticky API mode и задайте portrait bottom, landscape/desktop right.
