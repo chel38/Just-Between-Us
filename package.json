@@ -1,0 +1,33 @@
+{
+  "name": "between-the-lines-messenger-game",
+  "private": true,
+  "version": "0.1.0-chat-alpha",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate:dialogues": "vitest run src/engine/__tests__/dialogueValidator.test.ts",
+    "release": "npm run test && npm run build && node scripts/create-release.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "jszip": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  }
+}
