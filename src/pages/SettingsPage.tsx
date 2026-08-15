@@ -28,8 +28,6 @@ export function SettingsPage({ ui, settings, onChange, onUnlockTheme, onBack }: 
       <SettingsGroup icon={<Volume2 />} title={ui.audio}>
         <Toggle label={ui.sound} checked={settings.soundEnabled} onChange={(soundEnabled) => patch({ soundEnabled })} />
         <Range label={ui.soundVolume} value={settings.soundVolume} disabled={!settings.soundEnabled} onChange={(soundVolume) => patch({ soundVolume })} />
-        <Toggle label={ui.music} checked={settings.musicEnabled} onChange={(musicEnabled) => patch({ musicEnabled })} />
-        <Range label={ui.musicVolume} value={settings.musicVolume} disabled={!settings.musicEnabled} onChange={(musicVolume) => patch({ musicVolume })} />
       </SettingsGroup>
       <SettingsGroup icon={<Languages />} title={ui.language}>
         <div className="setting-row setting-row--stack"><label>{ui.language}</label><div className="segmented segmented--three">

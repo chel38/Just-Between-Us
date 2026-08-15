@@ -1,11 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { getCamilaDialogue } from '../../content/dialogues/camila';
+import { resolveUiLanguage } from '../../content/locales';
 import { createDefaultSave } from '../../types/save';
 import { DialogueEngine } from '../dialogue/dialogueEngine';
 import { resolveTranscriptMessage } from '../dialogue/transcriptResolver';
 import { migrateSave } from '../saves/migrations';
 
 describe('dynamic transcript localization', () => {
+  it('maps the SDK portal language while preserving an explicit player choice', () => {
+    expect(resolveUiLanguage('auto', 'ru-RU')).toBe('ru');
+    expect(resolveUiLanguage('auto', 'kk')).toBe('ru');
+    expect(resolveUiLanguage('auto', 'tr')).toBe('en');
+    expect(resolveUiLanguage('auto', 'en')).toBe('en');
+    expect(resolveUiLanguage('ru', 'en')).toBe('ru');
+  });
+
   it('keeps one progress graph while translating old script and player messages RU → EN → RU', () => {
     const ruDialogue = getCamilaDialogue('ru');
     const ruEngine = new DialogueEngine(ruDialogue);

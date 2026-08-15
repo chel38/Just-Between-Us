@@ -5,8 +5,10 @@
 - [x] `/sdk.js` подключается до `YaGames.init()`;
 - [x] Game Ready привязан к реальной готовности;
 - [x] auth не обязателен;
-- [x] local/cloud progress;
-- [x] язык через environment;
+- [x] local/cloud progress для гостя и авторизованного игрока;
+- [x] язык читается через `environment.i18n.lang` до `getPlayer()`;
+- [x] `game_api_pause/resume` подписаны до Player Data;
+- [x] production-ошибка SDK не маскируется mock-адаптером;
 - [x] реклама только через SDK;
 - [x] sticky API mode: нет initial show, layout резервируется только после user action;
 - [x] rewarded hint выдаётся только после reward callback;
@@ -24,7 +26,7 @@
 ## UI
 
 - [x] desktop двухколоночный режим;
-- [x] полноэкранный TV mode, overscan padding и управление стрелками/OK/Back;
+- [x] полноэкранный TV mode, overscan padding, стрелки/OK и SDK Back/Exit;
 - [x] mobile portrait 390×844;
 - [x] mobile landscape 844×390;
 - [x] safe-area и `100dvh`-совместимая оболочка;
@@ -35,16 +37,18 @@
 
 - [x] PNG-иконка 512×512;
 - [x] PNG-обложка 800×470;
-- [x] 2 desktop-скриншота 1600×900;
-- [x] 2 mobile-скриншота 900×1600;
+- [x] 2 JPG desktop-скриншота текущей production-сборки 1600×900;
+- [x] 2 JPG mobile-скриншота текущей production-сборки 900×1600;
+- [x] название игры на desktop-скриншотах совпадает с карточкой;
 - [x] тексты черновика на русском и английском;
 - [x] нейтральный промо-стиль без эротики и платформенных бейджей.
 
 ## Перед загрузкой
 
 1. `npm run release`.
-2. Распакуйте ZIP и убедитесь, что `index.html` в корне.
-3. Проверьте размер и отсутствие кириллицы/пробелов в путях.
+2. Release script проверяет `index.html` в корне, ASCII-пути без пробелов и размер менее 100 MB в распакованном виде.
+3. Проверьте ZIP и хеш итогового файла.
 4. Загрузите в Yandex Games и повторите SDK-проверки в debug panel.
 5. Загрузите файлы из `promo/` и укажите корректный рейтинг 18+ в консоли.
 6. Включите sticky API mode и задайте portrait bottom, landscape/desktop right.
+7. Не отправляйте на модерацию до ручного прогона debug panel на desktop, mobile и TV.

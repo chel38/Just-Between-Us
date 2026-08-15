@@ -1,3 +1,5 @@
+import type { LanguageSetting } from '../../types/save';
+
 export type UiLanguage = 'ru' | 'en';
 
 const ru = {
@@ -20,6 +22,7 @@ const ru = {
   today: 'Сегодня', unknownEndingsDescription: 'Неоткрытые финалы остаются тайной.', chooseStory: 'Выберите историю',
   opened: 'Открыто', openingApproaches: 'стартовых подходов', endingsCount: 'концовок', choicesRemembered: 'решения запоминаются',
   menu: 'Меню', exitTitle: 'Выйти из игры?', exitBody: 'Ваш прогресс сохранён. Вы сможете продолжить позже.', exit: 'Выйти',
+  loading: 'Загрузка', loadingError: 'Не удалось подключиться к платформе. Проверьте соединение и попробуйте снова.', retry: 'Повторить',
   stickyStatus: 'Sticky status', fullscreen: 'Полный экран', getHint: 'Получить намёк',
 };
 
@@ -45,6 +48,7 @@ const en: UiSchema = {
   today: 'Today', unknownEndingsDescription: 'Unknown endings stay hidden.', chooseStory: 'Choose a story',
   opened: 'Unlocked', openingApproaches: 'opening approaches', endingsCount: 'endings', choicesRemembered: 'choices are remembered',
   menu: 'Menu', exitTitle: 'Exit the game?', exitBody: 'Your progress is saved. You can continue later.', exit: 'Exit',
+  loading: 'Loading', loadingError: 'Could not connect to the platform. Check your connection and try again.', retry: 'Retry',
   stickyStatus: 'Sticky status', fullscreen: 'Fullscreen', getHint: 'Get a hint',
 };
 
@@ -52,3 +56,11 @@ const ui: Record<UiLanguage, UiSchema> = { ru, en };
 
 export type UiStrings = UiSchema;
 export const getUi = (language: UiLanguage): UiStrings => ui[language];
+
+const russianPortalLanguages = new Set(['ru', 'be', 'kk', 'uk', 'uz']);
+
+export function resolveUiLanguage(setting: LanguageSetting, portalLanguage?: string): UiLanguage {
+  if (setting === 'ru' || setting === 'en') return setting;
+  const normalized = portalLanguage?.trim().toLowerCase().split(/[-_]/)[0] ?? '';
+  return russianPortalLanguages.has(normalized) ? 'ru' : 'en';
+}

@@ -5,8 +5,17 @@ interface YandexPlayer {
 }
 
 interface YandexGamesSdk {
-  environment: { i18n?: { lang?: string }; browser?: { lang?: string } };
-  getPlayer(): Promise<YandexPlayer>;
+  environment: { i18n: { lang: string }; browser?: { lang?: string } };
+  getPlayer(options?: { signed?: boolean }): Promise<YandexPlayer>;
+  EVENTS: {
+    EXIT: 'EXIT';
+    HISTORY_BACK: 'HISTORY_BACK';
+    ACCOUNT_SELECTION_DIALOG_OPENED: 'ACCOUNT_SELECTION_DIALOG_OPENED';
+    ACCOUNT_SELECTION_DIALOG_CLOSED: 'ACCOUNT_SELECTION_DIALOG_CLOSED';
+  };
+  on(eventName: 'game_api_pause' | 'game_api_resume' | 'HISTORY_BACK' | 'ACCOUNT_SELECTION_DIALOG_OPENED' | 'ACCOUNT_SELECTION_DIALOG_CLOSED', listener: () => void): (() => void) | void;
+  off(eventName: 'game_api_pause' | 'game_api_resume' | 'HISTORY_BACK' | 'ACCOUNT_SELECTION_DIALOG_OPENED' | 'ACCOUNT_SELECTION_DIALOG_CLOSED', listener: () => void): void;
+  dispatchEvent(eventName: 'EXIT', detail?: object): Promise<unknown>;
   features: {
     LoadingAPI?: { ready(): Promise<void> | void };
     GameplayAPI?: { start(): Promise<void> | void; stop(): Promise<void> | void };

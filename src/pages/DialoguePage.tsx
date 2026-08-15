@@ -47,15 +47,6 @@ export function DialoguePage(props: DialoguePageProps) {
   pausedRef.current = props.paused || document.hidden;
 
   useEffect(() => {
-    const onVisibility = () => {
-      pausedRef.current = props.paused || document.hidden;
-      if (document.hidden) soundService.pause(); else soundService.resume();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [props.paused]);
-
-  useEffect(() => {
     const element = scrollRef.current;
     if (!element) return;
     const onScroll = () => { wasAtBottomRef.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80; };
@@ -90,9 +81,7 @@ export function DialoguePage(props: DialoguePageProps) {
       if (node.adBreak && !current.flags.includes(adFlag)) {
         current = { ...current, flags: [...current.flags, adFlag], updatedAt: Date.now() };
         onProgressRef.current(current);
-        soundService.pause();
         await props.onAdBreak();
-        soundService.resume();
       }
 
       while (!controller.signal.aborted) {
@@ -156,9 +145,7 @@ export function DialoguePage(props: DialoguePageProps) {
     if (!choices.length || !node.hint || hintLoading || hintRevealed) return;
     setHintLoading(true);
     setHintError(false);
-    soundService.pause();
     const rewarded = await props.onRewardedHint();
-    soundService.resume();
     if (rewarded) {
       const current = progressRef.current;
       props.onProgress({ ...current, revealedHints: { ...current.revealedHints, [node.id]: true }, updatedAt: Date.now() });

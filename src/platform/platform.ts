@@ -16,8 +16,12 @@ export interface PlatformService {
   readonly authorized: boolean;
   readonly deviceType: DeviceType;
   readonly isTV: boolean;
+  readonly lifecyclePaused: boolean;
   loadCloudSave(): Promise<GameSave | null>;
   saveCloud(save: GameSave, flush?: boolean): Promise<void>;
+  subscribeLifecycle(onPause: () => void, onResume: () => void): () => void;
+  subscribeHistoryBack(onBack: () => void): () => void;
+  exitGame(): Promise<void>;
   ready(): Promise<void>;
   gameplayStart(): void;
   gameplayStop(): void;
@@ -53,6 +57,7 @@ export class DevelopmentPlatform implements PlatformService {
   private stickyVisible = false;
   private rewardedSimulation: RewardedSimulation = 'reward';
   private fullscreen = false;
+  readonly lifecyclePaused = false;
   readonly debugMetrics = { stickyShowCalls: 0, stickyHideCalls: 0, rewardedCalls: 0 };
 
   get deviceType(): DeviceType { return this.currentDeviceType; }
@@ -62,6 +67,9 @@ export class DevelopmentPlatform implements PlatformService {
 
   async loadCloudSave(): Promise<GameSave | null> { return null; }
   async saveCloud(): Promise<void> { /* Guest progress is stored locally. */ }
+  subscribeLifecycle(): () => void { return () => undefined; }
+  subscribeHistoryBack(): () => void { return () => undefined; }
+  async exitGame(): Promise<void> { window.history.back(); }
   async ready(): Promise<void> { log('Development Game Ready'); }
   gameplayStart(): void { log('Gameplay started'); }
   gameplayStop(): void { log('Gameplay stopped'); }
@@ -71,7 +79,6 @@ export class DevelopmentPlatform implements PlatformService {
     if (restoreSticky) await this.hideStickyBanner();
     log('Fullscreen ad simulated');
     if (restoreSticky) await this.showStickyBanner();
-    this.gameplayStart();
     return false;
   }
   async showRewardedAd(): Promise<boolean> {
@@ -82,7 +89,6 @@ export class DevelopmentPlatform implements PlatformService {
     log('Rewarded ad simulated', this.rewardedSimulation);
     const rewarded = this.rewardedSimulation === 'reward';
     if (restoreSticky) await this.showStickyBanner();
-    this.gameplayStart();
     return rewarded;
   }
   async getStickyBannerStatus(): Promise<StickyBannerStatus> { return { stickyAdvIsShowing: this.stickyVisible }; }
@@ -110,18 +116,23 @@ export class DevelopmentPlatform implements PlatformService {
 export class YandexPlatform implements PlatformService {
   readonly kind = 'yandex' as const;
   readonly language: string;
-  readonly authorized: boolean;
+  authorized = false;
   readonly deviceType: DeviceType;
+  lifecyclePaused = false;
+  private player: YandexPlayer | null = null;
   private stickyRequested = false;
   private adInFlight = false;
+  private readonly pauseListeners = new Set<() => void>();
+  private readonly resumeListeners = new Set<() => void>();
+  private readonly historyBackListeners = new Set<() => void>();
 
   private constructor(
     private readonly sdk: YandexGamesSdk,
-    private readonly player: YandexPlayer | null,
+    language: string,
   ) {
-    this.language = sdk.environment.i18n?.lang ?? sdk.environment.browser?.lang ?? 'ru';
-    this.authorized = player?.isAuthorized() ?? false;
+    this.language = language;
     this.deviceType = sdk.deviceInfo().type;
+    this.bindSdkEvents();
   }
 
   get isTV(): boolean { return this.deviceType === 'tv'; }
@@ -130,15 +141,76 @@ export class YandexPlatform implements PlatformService {
     await loadYandexSdk();
     if (!window.YaGames) throw new Error('Yandex Games SDK did not expose YaGames.');
     const sdk = await window.YaGames.init();
-    let player: YandexPlayer | null = null;
-    try { player = await sdk.getPlayer(); }
-    catch (error) { log('Player is unavailable, continuing as guest.', error); }
-    log('Initialized', { authorized: player?.isAuthorized() ?? false, deviceType: sdk.deviceInfo().type });
-    return new YandexPlatform(sdk, player);
+
+    // Requirement 2.14: read the portal language immediately after SDK init.
+    // This must happen before player authorization/cloud loading so the Yandex
+    // debug panel can observe I18N usage during startup rather than later.
+    const language = sdk.environment.i18n.lang
+      || sdk.environment.browser?.lang
+      || 'en';
+
+    // Register lifecycle listeners before getPlayer(): startup advertising can
+    // pause the game while player/cloud initialization is still pending.
+    const platform = new YandexPlatform(sdk, language);
+    await platform.initializePlayer();
+    log('Initialized', { language, authorized: platform.authorized, deviceType: platform.deviceType });
+    return platform;
+  }
+
+  private bindSdkEvents(): void {
+    this.sdk.on('game_api_pause', () => {
+      this.lifecyclePaused = true;
+      this.pauseListeners.forEach((listener) => listener());
+    });
+    this.sdk.on('game_api_resume', () => {
+      this.lifecyclePaused = false;
+      this.resumeListeners.forEach((listener) => listener());
+    });
+    if (this.isTV) {
+      this.sdk.on(this.sdk.EVENTS.HISTORY_BACK, () => {
+        this.historyBackListeners.forEach((listener) => listener());
+      });
+    }
+  }
+
+  private async initializePlayer(): Promise<void> {
+    try {
+      this.player = await this.sdk.getPlayer();
+      this.authorized = this.player.isAuthorized();
+    } catch (error) {
+      this.player = null;
+      this.authorized = false;
+      log('Player is unavailable; local progress remains available.', error);
+    }
+  }
+
+  subscribeLifecycle(onPause: () => void, onResume: () => void): () => void {
+    this.pauseListeners.add(onPause);
+    this.resumeListeners.add(onResume);
+    if (this.lifecyclePaused) queueMicrotask(onPause);
+    return () => {
+      this.pauseListeners.delete(onPause);
+      this.resumeListeners.delete(onResume);
+    };
+  }
+
+  subscribeHistoryBack(onBack: () => void): () => void {
+    if (!this.isTV) return () => undefined;
+    this.historyBackListeners.add(onBack);
+    return () => { this.historyBackListeners.delete(onBack); };
+  }
+
+  async exitGame(): Promise<void> {
+    if (this.isTV) {
+      await this.sdk.dispatchEvent(this.sdk.EVENTS.EXIT);
+      return;
+    }
+    await this.exitFullscreen();
+    window.history.back();
   }
 
   async loadCloudSave(): Promise<GameSave | null> {
-    if (!this.player || !this.authorized) return null;
+    if (!this.player) return null;
     try {
       const data = await this.player.getData([CLOUD_KEY, LEGACY_CLOUD_KEY]);
       return (data[CLOUD_KEY] as GameSave | undefined)
@@ -151,7 +223,7 @@ export class YandexPlatform implements PlatformService {
   }
 
   async saveCloud(save: GameSave, flush = false): Promise<void> {
-    if (!this.player || !this.authorized) return;
+    if (!this.player) return;
     await this.player.setData({ [CLOUD_KEY]: save }, flush);
   }
 
@@ -194,7 +266,6 @@ export class YandexPlatform implements PlatformService {
 
   private async finishAd(): Promise<void> {
     if (this.stickyRequested) await this.showStickyBanner();
-    this.gameplayStart();
     this.adInFlight = false;
   }
 
@@ -260,12 +331,23 @@ function loadYandexSdk(): Promise<void> {
   if (sdkLoadPromise) return sdkLoadPromise;
   sdkLoadPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
+    let timeout = 0;
     script.src = '/sdk.js';
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Unable to load /sdk.js'));
+    const fail = (message: string) => {
+      window.clearTimeout(timeout);
+      script.remove();
+      sdkLoadPromise = null;
+      reject(new Error(message));
+    };
+    script.onload = () => {
+      window.clearTimeout(timeout);
+      if (window.YaGames) resolve();
+      else fail('/sdk.js loaded without exposing YaGames.');
+    };
+    script.onerror = () => fail('Unable to load /sdk.js.');
     document.head.append(script);
-    window.setTimeout(() => reject(new Error('Yandex SDK loading timed out.')), 8_000);
+    timeout = window.setTimeout(() => fail('Yandex SDK loading timed out.'), 15_000);
   });
   return sdkLoadPromise;
 }
@@ -273,9 +355,6 @@ function loadYandexSdk(): Promise<void> {
 export async function createPlatform(): Promise<PlatformService> {
   const isLocalPreview = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   const yandexRequested = (!import.meta.env.DEV && !isLocalPreview) || new URLSearchParams(location.search).has('yandex');
-  if (yandexRequested) {
-    try { return await YandexPlatform.create(); }
-    catch (error) { log('Falling back to development adapter.', error); }
-  }
+  if (yandexRequested) return YandexPlatform.create();
   return new DevelopmentPlatform();
 }

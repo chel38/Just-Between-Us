@@ -10,4 +10,4 @@
 
 Interstitial остаётся на сценарном `adBreak` и защищён save-флагом от повторения. Rewarded используется для косметической темы и node-specific hint. Hint ID сохраняется в `revealedHints`; текст берётся из текущей локали. Он появляется только если callback `onRewarded` был получен до закрытия. Close без reward и error возвращают `false`.
 
-Platform ad coordinator не допускает два fullscreen-вызова одновременно, останавливает GameplayAPI, временно скрывает sticky, затем восстанавливает его только если banner был запрошен пользователем. UI ставит звук и typing на паузу. Ошибка рекламы не меняет progress.
+Platform ad coordinator не допускает два fullscreen-вызова одновременно, останавливает GameplayAPI, временно скрывает sticky, затем восстанавливает его только если banner был запрошен пользователем. UI использует отдельную причину паузы для рекламы; SDK-события pause/resume не могут преждевременно включить звук или typing. Ошибка рекламы не меняет progress.

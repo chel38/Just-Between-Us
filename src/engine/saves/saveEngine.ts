@@ -38,10 +38,10 @@ export class SaveEngine {
     } catch (error) {
       log('Migrated local save could not be persisted.', error);
     }
-    if (this.platform.authorized) {
-      try { await this.platform.saveCloud(this.latest, true); }
-      catch (error) { log('Cloud v2 migration will retry on the next save.', error); }
-    }
+    // Yandex Player stores progress for guests as well as authorized users.
+    // The platform adapter is a no-op when no Player instance is available.
+    try { await this.platform.saveCloud(this.latest, true); }
+    catch (error) { log('Cloud v2 migration will retry on the next save.', error); }
     return structuredClone(this.latest);
   }
 

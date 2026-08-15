@@ -4,8 +4,8 @@
 
 ## Общие поля
 
-- Version: `0.1 chat-alpha`
-- Platforms: Desktop, Mobile
+- Version: `0.2`
+- Platforms: Desktop, Mobile, Tablet, TV (после ручной проверки каждого устройства)
 - Orientation: Portrait and Landscape
 - Cloud save: Yes
 - Suggested age rating: 18+

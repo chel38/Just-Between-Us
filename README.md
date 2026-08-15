@@ -19,7 +19,7 @@ npm run build
 npm run release
 ```
 
-Готовый архив получает версию из `package.json`, например `release/just-between-us-v0.1.0-chat-alpha-yandex.zip`. Внутри `index.html` лежит непосредственно в корне.
+Готовый архив получает версию из `package.json`, например `release/just-between-us-v0.2.0-yandex.zip`. Внутри `index.html` лежит непосредственно в корне.
 
 ## Что реализовано
 

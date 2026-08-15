@@ -17,8 +17,9 @@ const storage = new MemoryStorage();
 function platformMock(cloud: GameSave | null = null) {
   const saveCloud = vi.fn(async () => undefined);
   const platform: PlatformService = {
-    kind: 'development', language: 'ru', authorized: Boolean(cloud), deviceType: 'desktop', isTV: false,
+    kind: 'development', language: 'ru', authorized: false, deviceType: 'desktop', isTV: false, lifecyclePaused: false,
     loadCloudSave: async () => cloud, saveCloud, ready: async () => undefined,
+    subscribeLifecycle: () => () => undefined, subscribeHistoryBack: () => () => undefined, exitGame: async () => undefined,
     gameplayStart: () => undefined, gameplayStop: () => undefined,
     showFullscreenAd: async () => false, showRewardedAd: async () => false,
     getStickyBannerStatus: async () => ({ stickyAdvIsShowing: false }),
@@ -71,7 +72,7 @@ describe('save migrations', () => {
     expect(storage.getItem(LEGACY_STORAGE_KEY)).not.toBeNull();
   });
 
-  it('rewrites a legacy cloud payload through the new cloud provider key path', async () => {
+  it('rewrites a legacy guest-cloud payload through the new cloud provider key path', async () => {
     const legacyCloud = migrateSave({ saveVersion: 1, dialogs: {}, endings: {}, globalFlags: [], lastOpenedDialog: null, updatedAt: 30 } as never);
     legacyCloud.saveVersion = 1;
     const { platform, saveCloud } = platformMock(legacyCloud);

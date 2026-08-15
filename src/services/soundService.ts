@@ -2,9 +2,10 @@ import type { GameSettings } from '../types/save';
 
 export class SoundService {
   private context: AudioContext | null = null;
+  private readonly pauseReasons = new Set<string>();
 
   notify(settings: GameSettings): void {
-    if (!settings.soundEnabled || settings.soundVolume <= 0) return;
+    if (this.pauseReasons.size > 0 || !settings.soundEnabled || settings.soundVolume <= 0) return;
     try {
       this.context ??= new AudioContext();
       const oscillator = this.context.createOscillator();
@@ -20,8 +21,15 @@ export class SoundService {
     } catch { /* Audio is optional; a blocked context must not affect gameplay. */ }
   }
 
-  pause(): void { void this.context?.suspend(); }
-  resume(): void { void this.context?.resume(); }
+  pause(reason = 'manual'): void {
+    this.pauseReasons.add(reason);
+    void this.context?.suspend();
+  }
+
+  resume(reason = 'manual'): void {
+    this.pauseReasons.delete(reason);
+    if (this.pauseReasons.size === 0) void this.context?.resume();
+  }
 }
 
 export const soundService = new SoundService();

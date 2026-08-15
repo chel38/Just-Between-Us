@@ -4,7 +4,7 @@ import { ConfirmDialog } from './components/ConfirmDialog';
 import { DialogueDebugger } from './components/DialogueDebugger';
 import { DesktopChatSidebar } from './components/DesktopChatSidebar';
 import { getDialogues } from './content/dialogues';
-import { getUi, type UiLanguage } from './content/locales';
+import { getUi, resolveUiLanguage, type UiLanguage } from './content/locales';
 import { DialogueEngine } from './engine/dialogue/dialogueEngine';
 import { SaveEngine } from './engine/saves/saveEngine';
 import { useDeviceLayout } from './hooks/useDeviceLayout';
@@ -25,6 +25,10 @@ export default function App() {
   const [platform, setPlatform] = useState<PlatformService | null>(null);
   const [save, setSave] = useState<GameSave>(createDefaultSave);
   const [loading, setLoading] = useState(true);
+  const [initializationError, setInitializationError] = useState(false);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const [platformPaused, setPlatformPaused] = useState(false);
+  const [adPaused, setAdPaused] = useState(false);
   const [activeDialogueId, setActiveDialogueId] = useState<string | null>(null);
   const [selectedEndingDialogueId, setSelectedEndingDialogueId] = useState<string | null>(null);
   const [confirmRestart, setConfirmRestart] = useState(false);
@@ -35,12 +39,13 @@ export default function App() {
   const [debugOrientation, setDebugOrientation] = useState<Orientation | undefined>();
   const saveEngineRef = useRef<SaveEngine | null>(null);
   const stickyActivatedRef = useRef(false);
+  const readyPlatformRef = useRef<PlatformService | null>(null);
+  const adRequestInFlightRef = useRef(false);
 
-  const language: UiLanguage = useMemo(() => {
-    const preferred = save.settings.language;
-    if (preferred === 'ru' || preferred === 'en') return preferred;
-    return platform?.language.toLowerCase().startsWith('ru') ? 'ru' : 'en';
-  }, [save.settings.language, platform?.language]);
+  const language: UiLanguage = useMemo(
+    () => resolveUiLanguage(save.settings.language, platform?.language),
+    [save.settings.language, platform?.language],
+  );
   const ui = getUi(language);
   const dialogues = useMemo(() => getDialogues(language), [language]);
   const activeDialogue = dialogues.find((dialogue) => dialogue.id === activeDialogueId) ?? dialogues[0];
@@ -49,46 +54,87 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
+    setLoading(true);
+    setInitializationError(false);
     void (async () => {
-      const connectedPlatform = await createPlatform();
-      const engine = new SaveEngine(connectedPlatform);
-      const loaded = await engine.load();
-      if (!active) return;
-      saveEngineRef.current = engine;
-      setPlatform(connectedPlatform);
-      setSave(loaded);
-      if (loaded.lastOpenedDialog) {
-        setActiveDialogueId(loaded.lastOpenedDialog);
-        if (loaded.dialogs[loaded.lastOpenedDialog]) setRoute('dialogue');
+      try {
+        const connectedPlatform = await createPlatform();
+        const engine = new SaveEngine(connectedPlatform);
+        const loaded = await engine.load();
+        if (!active) return;
+        saveEngineRef.current = engine;
+        setPlatform(connectedPlatform);
+        setSave(loaded);
+        if (loaded.lastOpenedDialog) {
+          setActiveDialogueId(loaded.lastOpenedDialog);
+          if (loaded.dialogs[loaded.lastOpenedDialog]) setRoute('dialogue');
+        }
+      } catch (error) {
+        console.error('[Platform] Initialization failed.', error);
+        if (!active) return;
+        saveEngineRef.current = null;
+        setPlatform(null);
+        setInitializationError(true);
+      } finally {
+        if (active) setLoading(false);
       }
-      setLoading(false);
     })();
     return () => { active = false; };
+  }, [retryAttempt]);
+
+  useEffect(() => {
+    const preventContextMenu = (event: MouseEvent) => event.preventDefault();
+    document.addEventListener('contextmenu', preventContextMenu);
+    return () => document.removeEventListener('contextmenu', preventContextMenu);
   }, []);
 
   useEffect(() => { document.documentElement.lang = language; }, [language]);
 
   useEffect(() => {
-    if (loading || !platform) return;
-    const frame = requestAnimationFrame(() => requestAnimationFrame(() => void platform.ready()));
+    if (loading || !platform || readyPlatformRef.current === platform) return;
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => {
+      readyPlatformRef.current = platform;
+      void platform.ready().catch((error: unknown) => console.error('[YandexSDK] Game Ready failed.', error));
+    }));
     return () => cancelAnimationFrame(frame);
   }, [loading, platform]);
 
   useEffect(() => {
     if (!platform) return;
+    setPlatformPaused(platform.lifecyclePaused);
+    return platform.subscribeLifecycle(
+      () => { setPlatformPaused(true); soundService.pause('platform'); },
+      () => { setPlatformPaused(false); soundService.resume('platform'); },
+    );
+  }, [platform]);
+
+  useEffect(() => {
+    if (save.settings.soundEnabled && save.settings.soundVolume > 0) soundService.resume('settings');
+    else soundService.pause('settings');
+  }, [save.settings.soundEnabled, save.settings.soundVolume]);
+
+  useEffect(() => {
+    if (!platform) return;
     const syncGameplayState = () => {
-      if (route === 'dialogue' && !dialogueSettingsOpen && !confirmRestart && !confirmExit && !document.hidden) {
+      const visible = !document.hidden;
+      if (visible) soundService.resume('visibility');
+      else soundService.pause('visibility');
+      if (route === 'dialogue' && !dialogueSettingsOpen && !confirmRestart && !confirmExit && !platformPaused && !adPaused && visible) {
         platform.gameplayStart();
-        soundService.resume();
+        soundService.resume('gameplay');
       } else {
         platform.gameplayStop();
-        soundService.pause();
+        soundService.pause('gameplay');
       }
     };
     syncGameplayState();
     document.addEventListener('visibilitychange', syncGameplayState);
-    return () => document.removeEventListener('visibilitychange', syncGameplayState);
-  }, [platform, route, dialogueSettingsOpen, confirmRestart, confirmExit]);
+    return () => {
+      document.removeEventListener('visibilitychange', syncGameplayState);
+      platform.gameplayStop();
+      soundService.pause('gameplay');
+    };
+  }, [platform, route, dialogueSettingsOpen, confirmRestart, confirmExit, platformPaused, adPaused]);
 
   useEffect(() => {
     const flush = () => { void saveEngineRef.current?.flushCloud(true); };
@@ -118,8 +164,8 @@ export default function App() {
     setRoute('dialogue');
     setDialogueSettingsOpen(false);
     void activateSticky();
-    if (layout.isTV && platform) void platform.requestFullscreen();
-  }, [activateSticky, commit, dialogues, layout.isTV, platform, save]);
+    if (layout.deviceType !== 'desktop' && platform) void platform.requestFullscreen();
+  }, [activateSticky, commit, dialogues, layout.deviceType, platform, save]);
 
   const updateDialogueProgress = useCallback((dialogueId: string, nextProgress: DialogueProgress) => {
     const knownEndings = new Set([...(save.endings[dialogueId] ?? []), ...nextProgress.endingsUnlocked]);
@@ -141,12 +187,32 @@ export default function App() {
     setRoute('dialogue');
   };
 
+  const runAd = useCallback(async (request: () => Promise<boolean>) => {
+    if (adRequestInFlightRef.current) return false;
+    adRequestInFlightRef.current = true;
+    setAdPaused(true);
+    soundService.pause('advertisement');
+    try { return await request(); }
+    finally {
+      adRequestInFlightRef.current = false;
+      soundService.resume('advertisement');
+      setAdPaused(false);
+    }
+  }, []);
+
+  const showFullscreen = async () => {
+    if (!platform) return false;
+    return runAd(() => platform.showFullscreenAd());
+  };
+
   const showRewarded = async () => {
     if (!platform) return false;
-    soundService.pause();
-    const result = await platform.showRewardedAd();
-    soundService.resume();
-    return result;
+    return runAd(() => platform.showRewardedAd());
+  };
+
+  const exitGame = async () => {
+    await saveEngineRef.current?.flushCloud(true);
+    await platform?.exitGame();
   };
 
   const unlockTheme = async () => {
@@ -169,6 +235,8 @@ export default function App() {
     else setConfirmExit(true);
   }, [confirmExit, confirmRestart, dialogueSettingsOpen, route]);
 
+  useEffect(() => platform?.subscribeHistoryBack(handleBack), [platform, handleBack]);
+
   useTvNavigation(layout.isTV, handleBack, `${route}:${progress?.currentNodeId}:${progress?.awaitingChoice}:${dialogueSettingsOpen}`);
 
   const setDevelopmentDevice = (device: DeviceType) => {
@@ -190,8 +258,10 @@ export default function App() {
   };
 
   if (loading || !platform) {
-    const loadingLanguage: UiLanguage = navigator.language.toLowerCase().startsWith('ru') ? 'ru' : 'en';
-    return <div className="loading-screen"><span className="loading-mark"><i /><i /><i /></span><strong>{getUi(loadingLanguage).gameTitle}</strong></div>;
+    const loadingLanguage = resolveUiLanguage('auto', navigator.language);
+    const loadingUi = getUi(loadingLanguage);
+    if (initializationError) return <div className="loading-screen loading-screen--error"><strong>{loadingUi.gameTitle}</strong><p>{loadingUi.loadingError}</p><button className="button button--primary" onClick={() => setRetryAttempt((attempt) => attempt + 1)}>{loadingUi.retry}</button></div>;
+    return <div className="loading-screen"><span className="loading-mark"><i /><i /><i /></span><strong>{loadingUi.gameTitle}</strong><small>{loadingUi.loading}</small></div>;
   }
 
   const dialoguePage = activeDialogue && progress ? (
@@ -200,8 +270,8 @@ export default function App() {
       onProgress={(next) => updateDialogueProgress(activeDialogue.id, next)} onBack={() => setRoute('chats')}
       onRestart={() => setConfirmRestart(true)} onSettings={() => setDialogueSettingsOpen(true)}
       onMeaningfulInteraction={() => void activateSticky()}
-      paused={dialogueSettingsOpen || confirmRestart || confirmExit}
-      onAdBreak={() => platform.showFullscreenAd()} onRewardedHint={showRewarded}
+      paused={dialogueSettingsOpen || confirmRestart || confirmExit || platformPaused || adPaused}
+      onAdBreak={showFullscreen} onRewardedHint={showRewarded}
       onFullscreen={() => platform.requestFullscreen()}
     />
   ) : null;
@@ -218,7 +288,7 @@ export default function App() {
       <AppShell route={route} onNavigate={navigate} ui={ui} immersive={route === 'dialogue'} dialogueSidebar={route === 'dialogue' && activeDialogue ? <DesktopChatSidebar ui={ui} language={language} dialogues={dialogues} progresses={save.dialogs} activeDialogueId={activeDialogue.id} onOpen={openDialogue} /> : undefined}>{page}</AppShell>
       {dialogueSettingsOpen && <div className="settings-overlay" role="dialog" aria-modal="true"><SettingsPage ui={ui} settings={save.settings} onChange={updateSettings} onUnlockTheme={unlockTheme} onBack={() => setDialogueSettingsOpen(false)} /></div>}
       {confirmRestart && <ConfirmDialog title={ui.restartTitle} body={ui.restartBody} cancel={ui.cancel} confirm={ui.restart} onCancel={() => setConfirmRestart(false)} onConfirm={restartDialogue} />}
-      {confirmExit && <ConfirmDialog title={ui.exitTitle} body={ui.exitBody} cancel={ui.cancel} confirm={ui.exit} onCancel={() => setConfirmExit(false)} onConfirm={() => { void platform.exitFullscreen(); window.history.back(); }} />}
+      {confirmExit && <ConfirmDialog title={ui.exitTitle} body={ui.exitBody} cancel={ui.cancel} confirm={ui.exit} onCancel={() => setConfirmExit(false)} onConfirm={() => void exitGame()} />}
       {import.meta.env.DEV && activeDialogue && progress && <DialogueDebugger
         dialogue={activeDialogue} progress={progress} language={language} deviceType={layout.deviceType} orientation={layout.orientation}
         stickyVisible={stickyVisible} onProgress={(next) => updateDialogueProgress(activeDialogue.id, next)} onClear={() => setConfirmRestart(true)}
