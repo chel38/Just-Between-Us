@@ -2,15 +2,15 @@ import type { Character, Ending } from '../../../types/dialogue';
 
 export const leraCharacters: Record<'ru' | 'en', Character> = {
   ru: {
-    id: 'lera', name: 'Лера', age: 24, role: 'знакомая из ночного чата', status: 'в сети после полуночи', accent: 'уверенная, игривая',
+    id: 'lera', name: 'Лера', age: 24, role: 'девушка из галереи', status: 'дома, в сети после полуночи', accent: 'уверенная, игривая',
     avatar: './assets/characters/lera/avatar.webp', avatarLarge: './assets/characters/lera/avatar-large.webp',
-    summary: 'Уверенная взрослая девушка, которая любит психологические игры, но ценит границы и честность.',
+    summary: 'Уверенная 24-летняя девушка: любит проверять реакцию, скрывает уязвимость за иронией и особенно ценит честность и уважение к границам.',
     writingProfile: { capitalization: 'mixed', emojiFrequency: 'medium', doubleMessageFrequency: 'high', punctuationStyle: 'casual', averageMessageLength: 'mixed', typoFrequency: 'rare' },
   },
   en: {
-    id: 'lera', name: 'Lera', age: 24, role: 'a late-night chat acquaintance', status: 'online after midnight', accent: 'confident, playful',
+    id: 'lera', name: 'Lera', age: 24, role: 'the woman from the gallery', status: 'home, online after midnight', accent: 'confident, playful',
     avatar: './assets/characters/lera/avatar.webp', avatarLarge: './assets/characters/lera/avatar-large.webp',
-    summary: 'A confident adult woman who enjoys psychological games but values boundaries and honesty.',
+    summary: 'A confident 24-year-old woman who tests reactions, hides vulnerability behind irony, and cares deeply about honesty and boundaries.',
     writingProfile: { capitalization: 'mixed', emojiFrequency: 'medium', doubleMessageFrequency: 'high', punctuationStyle: 'casual', averageMessageLength: 'mixed', typoFrequency: 'rare' },
   },
 };

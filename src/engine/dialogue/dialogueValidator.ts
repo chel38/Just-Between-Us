@@ -49,6 +49,11 @@ export function validateDialogue(dialogue: DialogueDefinition): void {
       if (message.kind !== 'delay' && !message.text?.trim()) {
         issues.push(`${dialogue.id}/${node.id}/${message.id}: message text is empty.`);
       }
+      if (message.kind === 'photo') {
+        if (!message.image?.trim()) issues.push(`${dialogue.id}/${node.id}/${message.id}: photo asset is missing.`);
+        if (!message.alt?.trim()) issues.push(`${dialogue.id}/${node.id}/${message.id}: localized photo alt is missing.`);
+        if (node.promoSafe === true) issues.push(`${dialogue.id}/${node.id}/${message.id}: story photo cannot be marked promo-safe.`);
+      }
     }
   }
 
@@ -119,8 +124,43 @@ export function validateDialoguePair(primary: DialogueDefinition, localized: Dia
   primary.nodes.forEach((node) => {
     const translated = localizedNodes.get(node.id);
     if (node.choices?.length && (!node.hint?.trim() || !translated?.hint?.trim())) issues.push(`${primary.id}/${node.id}: localized hint is missing.`);
+    if (!translated) return;
+    const primaryLogic = structuralNodeLogic(node);
+    const localizedLogic = structuralNodeLogic(translated);
+    if (JSON.stringify(primaryLogic) !== JSON.stringify(localizedLogic)) {
+      issues.push(`${primary.id}/${node.id}: localized graph logic differs from the primary language.`);
+    }
   });
   if (issues.length) throw new DialogueValidationError(issues);
+}
+
+function structuralNodeLogic(node: DialogueDefinition['nodes'][number]): unknown {
+  return {
+    chapter: node.chapter,
+    endingId: node.endingId,
+    onEnter: node.onEnter,
+    adBreak: node.adBreak,
+    promoSafe: node.promoSafe,
+    sceneContext: node.sceneContext,
+    messages: node.messages.map((message) => ({
+      id: message.id,
+      kind: message.kind,
+      delayMs: message.delayMs,
+      typing: message.typing,
+      typingInterrupted: message.typingInterrupted,
+      reaction: message.reaction,
+      quoteSourceId: message.quoteSourceId,
+      image: message.image,
+      conditions: message.conditions,
+    })),
+    choices: node.choices?.map((choice) => ({
+      id: choice.id,
+      next: choice.next,
+      effects: choice.effects,
+      conditions: choice.conditions,
+      tone: choice.tone,
+    })),
+  };
 }
 
 function compareIds(label: string, primary: string[], localized: string[], issues: string[]): void {

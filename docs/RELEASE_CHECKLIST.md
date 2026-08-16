@@ -25,7 +25,7 @@
 - [x] blacklist и restart только одного диалога;
 - [x] восстановление текущего узла и transcript;
 - [x] валидатор и маршруты до всех концовок.
-- [x] 2 photo-message Леры: lazy preload, retry fallback, RU/EN alt, `promoAllowed: false`;
+- [x] 2 photo-message Леры: добровольное закрытое relationship-фото и gallery clue, identity reference, RU/EN alt, `promoAllowed: false`;
 
 ## UI
 

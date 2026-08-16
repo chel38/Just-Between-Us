@@ -69,6 +69,16 @@ export interface DialogueChoice {
   tone?: 'warm' | 'bold' | 'careful' | 'witty' | 'risky';
 }
 
+export interface SceneContext {
+  time: string;
+  playerLocation: string;
+  characterLocation: string;
+  markLocation?: string;
+  sceneGoal: string;
+  knownFacts: string[];
+  immediateRisk: 'low' | 'medium' | 'high' | 'resolved';
+}
+
 export interface DialogueNode {
   id: string;
   chapter: number;
@@ -79,6 +89,8 @@ export interface DialogueNode {
   adBreak?: boolean;
   hint?: string;
   promoSafe?: boolean;
+  /** Development-only continuity metadata. It is never rendered to the player. */
+  sceneContext?: SceneContext;
 }
 
 export interface Ending {
