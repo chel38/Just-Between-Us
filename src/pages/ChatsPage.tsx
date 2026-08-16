@@ -1,5 +1,6 @@
-import { CheckCheck, ChevronRight } from 'lucide-react';
+import { CheckCheck, ChevronRight, Clock3 } from 'lucide-react';
 import { Avatar } from '../components/Avatar';
+import type { UpcomingDialogue } from '../content/dialogues/upcoming';
 import type { UiLanguage, UiStrings } from '../content/locales';
 import { resolveLastMessage } from '../engine/dialogue/transcriptResolver';
 import type { DialogueDefinition, DialogueProgress } from '../types/dialogue';
@@ -8,14 +9,15 @@ interface ChatsPageProps {
   ui: UiStrings;
   language: UiLanguage;
   dialogues: DialogueDefinition[];
+  upcomingDialogues: UpcomingDialogue[];
   progresses: Record<string, DialogueProgress>;
   onOpen: (dialogueId: string) => void;
 }
 
-export function ChatsPage({ ui, language, dialogues, progresses, onOpen }: ChatsPageProps) {
+export function ChatsPage({ ui, language, dialogues, upcomingDialogues, progresses, onOpen }: ChatsPageProps) {
   return (
     <div className="page list-page">
-      <header className="page-header"><div><span className="eyebrow">{ui.gameSubtitle}</span><h1>{ui.dialogues}</h1></div><span className="header-count">{dialogues.length}</span></header>
+      <header className="page-header"><div><span className="eyebrow">{ui.gameSubtitle}</span><h1>{ui.dialogues}</h1></div><span className="header-count">{dialogues.length + upcomingDialogues.length}</span></header>
       <div className="chat-list">
         {dialogues.map((dialogue, index) => {
           const progress = progresses[dialogue.id];
@@ -32,6 +34,16 @@ export function ChatsPage({ ui, language, dialogues, progresses, onOpen }: Chats
             </button>
           );
         })}
+        {upcomingDialogues.map((dialogue) => (
+          <button key={dialogue.id} className="chat-row chat-row--locked chat-row--coming-soon" disabled aria-label={`${dialogue.characterName}: ${dialogue.status}`}>
+            <Avatar name={dialogue.characterName} size="md" />
+            <span className="chat-row__body">
+              <span className="chat-row__top"><strong>{dialogue.characterName}</strong><time>{dialogue.status}</time></span>
+              <span className="chat-row__bottom"><span>{dialogue.preview}</span><Clock3 size={16} /></span>
+              <small>{dialogue.status}</small>
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

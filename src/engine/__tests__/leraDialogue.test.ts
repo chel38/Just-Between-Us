@@ -85,7 +85,7 @@ describe('Lera dialogue graph', () => {
     const photo = progress.history.find((message) => message.sourceId === 'lera_photo_one')!;
     const ru = resolveTranscriptMessage(photo, getLeraDialogue('ru'));
     const en = resolveTranscriptMessage(photo, getLeraDialogue('en'));
-    expect(ru.image).toBe('/assets/characters/lera/story/night-01.webp');
+    expect(ru.image).toBe('./assets/characters/lera/story/night-01.webp');
     expect(en.image).toBe(ru.image);
     expect(ru.alt).toContain('взрослая женщина 24 лет');
     expect(en.alt).toContain('adult woman age 24');

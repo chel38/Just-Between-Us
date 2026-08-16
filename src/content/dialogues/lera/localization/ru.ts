@@ -89,7 +89,7 @@ export const leraRuNodes: DialogueNode[] = [
   ] },
   { id: 'lera_photo_scene', chapter: 3, messages: [
     { id: 'lera_photo_preface', sender: 'character', text: 'ладно' },
-    { id: 'lera_photo_one', sender: 'character', kind: 'photo', text: 'вот моё настроение. только между нами 🙃', image: '/assets/characters/lera/story/night-01.webp', alt: 'Лера, взрослая женщина 24 лет, делает вечернее селфи дома в закрытой чёрной пижамной рубашке.' },
+    { id: 'lera_photo_one', sender: 'character', kind: 'photo', text: 'вот моё настроение. только между нами 🙃', image: './assets/characters/lera/story/night-01.webp', alt: 'Лера, взрослая женщина 24 лет, делает вечернее селфи дома в закрытой чёрной пижамной рубашке.' },
     { id: 'lera_photo_after', sender: 'character', text: 'и не делай из этого выводов раньше времени' },
   ], choices: [
     { id: 'lera_photo_expression', text: 'Смотрю на улыбку, а не на рубашку.', next: 'lera_gallery_clue', effects: { trust: 2, respect: 2, setFlags: ['lera_noticed_expression'] } },
@@ -130,7 +130,7 @@ export const leraRuNodes: DialogueNode[] = [
   ] },
   { id: 'lera_outfit_scene', chapter: 4, messages: [
     { id: 'lera_outfit_a', sender: 'character', text: 'почти угадал' },
-    { id: 'lera_photo_two', sender: 'character', kind: 'photo', text: 'в этом платье я была в галерее. теперь вспомнил?', image: '/assets/characters/lera/story/night-02.webp', alt: 'Лера, взрослая женщина 24 лет, показывает в зеркале закрытое тёмно-сливовое платье в вечерней комнате.' },
+    { id: 'lera_photo_two', sender: 'character', kind: 'photo', text: 'в этом платье я была в галерее. теперь вспомнил?', image: './assets/characters/lera/story/night-02.webp', alt: 'Лера, взрослая женщина 24 лет, показывает в зеркале закрытое тёмно-сливовое платье в вечерней комнате.' },
     { id: 'lera_outfit_b', sender: 'character', text: 'я заметила тебя раньше, чем ты подошёл к картине' },
   ], choices: [
     { id: 'lera_outfit_detail', text: 'Теперь да. И понимаю, почему цвет казался знакомым.', next: 'lera_reveal', effects: { trust: 2, attraction: 2, setFlags: ['lera_remembered_detail'] } },

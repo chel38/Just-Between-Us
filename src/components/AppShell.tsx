@@ -1,4 +1,4 @@
-import { CircleEllipsis, Info, MessageCircle, Settings, Sparkles } from 'lucide-react';
+import { CircleEllipsis, House, Info, MessageCircle, Settings, Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { UiStrings } from '../content/locales';
 
@@ -14,6 +14,7 @@ interface AppShellProps {
 }
 
 const nav = [
+  ['home', House, 'home'],
   ['chats', MessageCircle, 'dialogues'],
   ['endings', Sparkles, 'endings'],
   ['settings', Settings, 'settings'],
@@ -41,8 +42,8 @@ export function AppShell({ route, onNavigate, ui, children, immersive = false, d
       <section className="app-surface">{children}</section>
       {!immersive && (
         <nav className="bottom-nav" aria-label={ui.gameTitle}>
-          {nav.slice(0, 3).map(([target, Icon, label]) => (
-            <button key={target} className={route === target ? 'is-active' : ''} onClick={() => onNavigate(target)} data-tv-focus>
+          {nav.slice(0, 4).map(([target, Icon, label]) => (
+            <button key={target} className={route === target || (target === 'chats' && route === 'dialogue') ? 'is-active' : ''} onClick={() => onNavigate(target)} data-tv-focus>
               <Icon size={20} /><span>{ui[label]}</span>
             </button>
           ))}

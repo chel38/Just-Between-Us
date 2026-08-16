@@ -16,7 +16,7 @@ export const ADULT_STORY_ASSETS: readonly AdultStoryAsset[] = [
     characterAge: 24,
     contentRating: '18+',
     promoAllowed: false,
-    asset: '/assets/characters/lera/story/night-01.webp',
+    asset: './assets/characters/lera/story/night-01.webp',
   },
   {
     id: 'lera-night-02',
@@ -24,7 +24,7 @@ export const ADULT_STORY_ASSETS: readonly AdultStoryAsset[] = [
     characterAge: 24,
     contentRating: '18+',
     promoAllowed: false,
-    asset: '/assets/characters/lera/story/night-02.webp',
+    asset: './assets/characters/lera/story/night-02.webp',
   },
 ] as const;
 

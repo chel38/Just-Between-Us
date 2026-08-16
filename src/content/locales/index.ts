@@ -3,7 +3,9 @@ import type { LanguageSetting } from '../../types/save';
 export type UiLanguage = 'ru' | 'en';
 
 const ru = {
-  gameTitle: 'Только между нами', gameSubtitle: 'Сюжетный мессенджер', continue: 'Продолжить', dialogues: 'Диалоги', endings: 'Концовки',
+  gameTitle: 'Только между нами', gameSubtitle: 'Сюжетный мессенджер', continue: 'Продолжить', home: 'Главная', dialogues: 'Диалоги', endings: 'Концовки',
+  storyCollection: 'КОЛЛЕКЦИЯ ИСТОРИЙ', homeTitle: 'Каждый чат хранит свою тайну', homeIntro: 'Выбирайте, кому написать, проживайте разные истории и возвращайтесь к решениям, которые уже изменили ваши отношения.',
+  openStoryList: 'Все диалоги', availableNow: 'ДОСТУПНО СЕЙЧАС', availableStories: 'Выберите историю', storyProgress: 'Прогресс историй', storiesAvailable: 'истории доступны', unlockedEndingsStat: 'открыто финалов', decisionsMade: 'принято решений',
   settings: 'Настройки', about: 'Об игре', online: 'была недавно', newStory: 'Новая история', continueStory: 'Продолжить', completed: 'Завершено',
   storyLabel: 'ИСТОРИЯ 01', storyTitle: 'Квартира 47', storyTeaser: 'Один ключ. Пустая квартира. Ваше имя на стене.',
   storyMeta: 'Камила, 31 · психологический триллер', begin: 'Начать переписку', typing: 'печатает…', replyHint: 'Выберите сообщение',
@@ -32,7 +34,9 @@ const ru = {
 type UiSchema = { [Key in keyof typeof ru]: string };
 
 const en: UiSchema = {
-  gameTitle: 'Just Between Us', gameSubtitle: 'Interactive story messenger', continue: 'Continue', dialogues: 'Chats', endings: 'Endings',
+  gameTitle: 'Just Between Us', gameSubtitle: 'Interactive story messenger', continue: 'Continue', home: 'Home', dialogues: 'Chats', endings: 'Endings',
+  storyCollection: 'STORY COLLECTION', homeTitle: 'Every chat keeps a secret', homeIntro: 'Choose who to message, experience different stories, and return to the choices that have already changed your relationships.',
+  openStoryList: 'All chats', availableNow: 'AVAILABLE NOW', availableStories: 'Choose a story', storyProgress: 'Story progress', storiesAvailable: 'stories available', unlockedEndingsStat: 'endings unlocked', decisionsMade: 'choices made',
   settings: 'Settings', about: 'About', online: 'seen recently', newStory: 'New story', continueStory: 'Continue', completed: 'Complete',
   storyLabel: 'STORY 01', storyTitle: 'Apartment 47', storyTeaser: 'One key. An empty apartment. Your name on the wall.',
   storyMeta: 'Camila, 31 · psychological thriller', begin: 'Start conversation', typing: 'is typing…', replyHint: 'Choose a message',

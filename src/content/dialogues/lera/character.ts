@@ -3,13 +3,13 @@ import type { Character, Ending } from '../../../types/dialogue';
 export const leraCharacters: Record<'ru' | 'en', Character> = {
   ru: {
     id: 'lera', name: 'Лера', age: 24, role: 'знакомая из ночного чата', status: 'в сети после полуночи', accent: 'уверенная, игривая',
-    avatar: '/assets/characters/lera/avatar.webp', avatarLarge: '/assets/characters/lera/avatar-large.webp',
+    avatar: './assets/characters/lera/avatar.webp', avatarLarge: './assets/characters/lera/avatar-large.webp',
     summary: 'Уверенная взрослая девушка, которая любит психологические игры, но ценит границы и честность.',
     writingProfile: { capitalization: 'mixed', emojiFrequency: 'medium', doubleMessageFrequency: 'high', punctuationStyle: 'casual', averageMessageLength: 'mixed', typoFrequency: 'rare' },
   },
   en: {
     id: 'lera', name: 'Lera', age: 24, role: 'a late-night chat acquaintance', status: 'online after midnight', accent: 'confident, playful',
-    avatar: '/assets/characters/lera/avatar.webp', avatarLarge: '/assets/characters/lera/avatar-large.webp',
+    avatar: './assets/characters/lera/avatar.webp', avatarLarge: './assets/characters/lera/avatar-large.webp',
     summary: 'A confident adult woman who enjoys psychological games but values boundaries and honesty.',
     writingProfile: { capitalization: 'mixed', emojiFrequency: 'medium', doubleMessageFrequency: 'high', punctuationStyle: 'casual', averageMessageLength: 'mixed', typoFrequency: 'rare' },
   },

@@ -1,4 +1,5 @@
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Clock3 } from 'lucide-react';
+import type { UpcomingDialogue } from '../content/dialogues/upcoming';
 import type { UiLanguage, UiStrings } from '../content/locales';
 import { resolveLastMessage } from '../engine/dialogue/transcriptResolver';
 import type { DialogueDefinition, DialogueProgress } from '../types/dialogue';
@@ -8,12 +9,13 @@ interface Props {
   ui: UiStrings;
   language: UiLanguage;
   dialogues: DialogueDefinition[];
+  upcomingDialogues: UpcomingDialogue[];
   progresses: Record<string, DialogueProgress>;
   activeDialogueId: string;
   onOpen: (dialogueId: string) => void;
 }
 
-export function DesktopChatSidebar({ ui, language, dialogues, progresses, activeDialogueId, onOpen }: Props) {
+export function DesktopChatSidebar({ ui, language, dialogues, upcomingDialogues, progresses, activeDialogueId, onOpen }: Props) {
   return (
     <aside className="desktop-chat-sidebar" aria-label={ui.dialogues}>
       <header><small>{ui.gameTitle}</small><strong>{ui.dialogues}</strong></header>
@@ -26,7 +28,15 @@ export function DesktopChatSidebar({ ui, language, dialogues, progresses, active
             {progress && <CheckCheck aria-label={new Date(progress.updatedAt).toLocaleTimeString(language === 'ru' ? 'ru-RU' : 'en-US')} />}
           </button>
         );
-      })}</div>
+      })}
+        {upcomingDialogues.map((dialogue) => (
+          <button key={dialogue.id} className="is-coming-soon" disabled aria-label={`${dialogue.characterName}: ${dialogue.status}`}>
+            <Avatar name={dialogue.characterName} size="sm" />
+            <span><strong>{dialogue.characterName}</strong><small>{dialogue.status}</small></span>
+            <Clock3 aria-hidden="true" />
+          </button>
+        ))}
+      </div>
     </aside>
   );
 }

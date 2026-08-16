@@ -5,6 +5,7 @@ import { ConfirmDialog } from './components/ConfirmDialog';
 import { DialogueDebugger } from './components/DialogueDebugger';
 import { DesktopChatSidebar } from './components/DesktopChatSidebar';
 import { getDialogues } from './content/dialogues';
+import { getUpcomingDialogues } from './content/dialogues/upcoming';
 import { validateAdultStoryAssets } from './content/assets/adultAssetManifest';
 import { getUi, resolveUiLanguage, type UiLanguage } from './content/locales';
 import { DialogueEngine } from './engine/dialogue/dialogueEngine';
@@ -56,6 +57,7 @@ export default function App() {
   );
   const ui = getUi(language);
   const dialogues = useMemo(() => getDialogues(language), [language]);
+  const upcomingDialogues = useMemo(() => getUpcomingDialogues(language), [language]);
   const activeDialogue = dialogues.find((dialogue) => dialogue.id === activeDialogueId) ?? dialogues[0];
   const progress = activeDialogue ? save.dialogs[activeDialogue.id] : undefined;
   const layout = useDeviceLayout(debugDevice ?? platform?.deviceType ?? 'desktop', debugOrientation, stickyVisible);
@@ -144,6 +146,13 @@ export default function App() {
   }, []);
 
   useEffect(() => { document.documentElement.lang = language; }, [language]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>('.app-surface > .page')?.scrollTo({ top: 0, left: 0 });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [route]);
 
   useEffect(() => {
     if (!bootVisualReady || !platform || readyPlatformRef.current === platform) return;
@@ -330,8 +339,8 @@ export default function App() {
     />
   ) : null;
 
-  const page = route === 'home' && activeDialogue ? <HomePage ui={ui} progress={save.dialogs[activeDialogue.id]} dialogue={activeDialogue} onOpen={() => openDialogue(activeDialogue.id)} />
-    : route === 'chats' ? <ChatsPage ui={ui} language={language} dialogues={dialogues} progresses={save.dialogs} onOpen={openDialogue} />
+  const page = route === 'home' ? <HomePage ui={ui} language={language} dialogues={dialogues} upcomingDialogues={upcomingDialogues} progresses={save.dialogs} onOpenDialogue={openDialogue} onOpenChats={() => setRoute('chats')} />
+    : route === 'chats' ? <ChatsPage ui={ui} language={language} dialogues={dialogues} upcomingDialogues={upcomingDialogues} progresses={save.dialogs} onOpen={openDialogue} />
       : route === 'settings' ? <SettingsPage ui={ui} settings={save.settings} onChange={updateSettings} onUnlockTheme={unlockTheme} />
         : route === 'endings' ? <EndingsPage ui={ui} dialogues={dialogues} unlockedEndingsByDialogue={save.endings} selectedDialogueId={selectedEndingDialogueId} onSelectDialogue={setSelectedEndingDialogueId} />
           : route === 'about' ? <AboutPage ui={ui} language={language} />
@@ -340,7 +349,7 @@ export default function App() {
   return (
     <div className={`app-root theme-${save.settings.activeTheme} device-${layout.deviceType} orientation-${layout.orientation} sticky-edge-${layout.stickyEdge} ${stickyVisible ? 'sticky-banner-visible' : ''} ${save.settings.reducedMotion ? 'reduce-motion' : ''}`} style={layout.cssVariables} onContextMenu={(event) => event.preventDefault()}>
       {!legalConsentAccepted ? <AgeGate language={language} onAccept={() => commit({ ...save, legalConsent: createLegalConsent() })} /> : <>
-        <AppShell route={route} onNavigate={navigate} ui={ui} immersive={route === 'dialogue'} dialogueSidebar={route === 'dialogue' && activeDialogue ? <DesktopChatSidebar ui={ui} language={language} dialogues={dialogues} progresses={save.dialogs} activeDialogueId={activeDialogue.id} onOpen={openDialogue} /> : undefined}>{page}</AppShell>
+        <AppShell route={route} onNavigate={navigate} ui={ui} immersive={route === 'dialogue'} dialogueSidebar={route === 'dialogue' && activeDialogue ? <DesktopChatSidebar ui={ui} language={language} dialogues={dialogues} upcomingDialogues={upcomingDialogues} progresses={save.dialogs} activeDialogueId={activeDialogue.id} onOpen={openDialogue} /> : undefined}>{page}</AppShell>
         {dialogueSettingsOpen && <div className="settings-overlay" role="dialog" aria-modal="true"><SettingsPage ui={ui} settings={save.settings} onChange={updateSettings} onUnlockTheme={unlockTheme} onBack={() => setDialogueSettingsOpen(false)} /></div>}
         {confirmRestart && <ConfirmDialog title={ui.restartTitle} body={ui.restartBody} cancel={ui.cancel} confirm={ui.restart} onCancel={() => setConfirmRestart(false)} onConfirm={restartDialogue} />}
         {confirmExit && <ConfirmDialog title={ui.exitTitle} body={ui.exitBody} cancel={ui.cancel} confirm={ui.exit} onCancel={() => setConfirmExit(false)} onConfirm={() => void exitGame()} />}

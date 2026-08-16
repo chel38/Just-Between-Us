@@ -89,7 +89,7 @@ export const leraEnNodes: DialogueNode[] = [
   ] },
   { id: 'lera_photo_scene', chapter: 3, messages: [
     { id: 'lera_photo_preface', sender: 'character', text: 'okay' },
-    { id: 'lera_photo_one', sender: 'character', kind: 'photo', text: 'here’s my mood. just between us 🙃', image: '/assets/characters/lera/story/night-01.webp', alt: 'Lera, an adult woman age 24, takes an evening selfie at home in a closed black pajama shirt.' },
+    { id: 'lera_photo_one', sender: 'character', kind: 'photo', text: 'here’s my mood. just between us 🙃', image: './assets/characters/lera/story/night-01.webp', alt: 'Lera, an adult woman age 24, takes an evening selfie at home in a closed black pajama shirt.' },
     { id: 'lera_photo_after', sender: 'character', text: 'and don’t draw conclusions too early' },
   ], choices: [
     { id: 'lera_photo_expression', text: 'I’m looking at the smile, not the shirt.', next: 'lera_gallery_clue', effects: { trust: 2, respect: 2, setFlags: ['lera_noticed_expression'] } },
@@ -130,7 +130,7 @@ export const leraEnNodes: DialogueNode[] = [
   ] },
   { id: 'lera_outfit_scene', chapter: 4, messages: [
     { id: 'lera_outfit_a', sender: 'character', text: 'almost right' },
-    { id: 'lera_photo_two', sender: 'character', kind: 'photo', text: 'I wore this dress at the gallery. remember now?', image: '/assets/characters/lera/story/night-02.webp', alt: 'Lera, an adult woman age 24, shows a closed dark plum dress in a mirror in an evening room.' },
+    { id: 'lera_photo_two', sender: 'character', kind: 'photo', text: 'I wore this dress at the gallery. remember now?', image: './assets/characters/lera/story/night-02.webp', alt: 'Lera, an adult woman age 24, shows a closed dark plum dress in a mirror in an evening room.' },
     { id: 'lera_outfit_b', sender: 'character', text: 'I noticed you before you walked up to the painting' },
   ], choices: [
     { id: 'lera_outfit_detail', text: 'Now I do. And I know why the color felt familiar.', next: 'lera_reveal', effects: { trust: 2, attraction: 2, setFlags: ['lera_remembered_detail'] } },
