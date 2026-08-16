@@ -63,6 +63,7 @@ export function getCamilaDialogue(language: 'ru' | 'en'): DialogueDefinition {
   return {
     id: 'camila',
     title: language === 'ru' ? 'Квартира 47' : 'Apartment 47',
+    contentRating: '18+',
     startNodeId: 'start',
     character: camilaCharacters[language],
     nodes: nodes.map((node) => ({ ...node, hint: hints[language][node.id] })),

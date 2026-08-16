@@ -3,8 +3,11 @@ import type { GameSave } from '../../types/save';
 import { createDefaultSave } from '../../types/save';
 import { migrateSave } from './migrations';
 
-export const STORAGE_KEY = 'just-between-us-save-v2';
+export const STORAGE_KEY = 'just-between-us-save-v3';
+export const PREVIOUS_STORAGE_KEY = 'just-between-us-save-v2';
 export const LEGACY_STORAGE_KEY = 'between-lines-save-v1';
+
+export type SaveLoadMilestone = 'save' | 'migration';
 
 const log = (...args: unknown[]) => {
   if (import.meta.env.DEV) console.info('[SaveEngine]', ...args);
@@ -16,32 +19,35 @@ export class SaveEngine {
 
   constructor(private readonly platform: PlatformService) {}
 
-  async load(): Promise<GameSave> {
+  async load(onMilestone?: (milestone: SaveLoadMilestone) => void): Promise<GameSave> {
     let local: GameSave | null = null;
     let usedLegacyLocal = false;
     try {
       const current = localStorage.getItem(STORAGE_KEY);
-      const legacy = current ? null : localStorage.getItem(LEGACY_STORAGE_KEY);
-      usedLegacyLocal = !current && Boolean(legacy);
-      const serialized = current ?? legacy;
-      local = serialized ? migrateSave(JSON.parse(serialized) as GameSave) : null;
+      const previous = current ? null : localStorage.getItem(PREVIOUS_STORAGE_KEY);
+      const legacy = current || previous ? null : localStorage.getItem(LEGACY_STORAGE_KEY);
+      usedLegacyLocal = !current && Boolean(previous || legacy);
+      const serialized = current ?? previous ?? legacy;
+      local = serialized ? JSON.parse(serialized) as GameSave : null;
     } catch (error) {
       log('Local save could not be read.', error);
     }
     const cloud = await this.platform.loadCloudSave();
+    onMilestone?.('save');
     this.latest = migrateSave(
       cloud && (!local || cloud.updatedAt > local.updatedAt) ? cloud : local,
     );
+    onMilestone?.('migration');
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.latest));
-      if (usedLegacyLocal) log('Legacy local save migrated to v2.');
+      if (usedLegacyLocal) log('Legacy local save migrated to v3.');
     } catch (error) {
       log('Migrated local save could not be persisted.', error);
     }
     // Yandex Player stores progress for guests as well as authorized users.
     // The platform adapter is a no-op when no Player instance is available.
     try { await this.platform.saveCloud(this.latest, true); }
-    catch (error) { log('Cloud v2 migration will retry on the next save.', error); }
+    catch (error) { log('Cloud v3 migration will retry on the next save.', error); }
     return structuredClone(this.latest);
   }
 

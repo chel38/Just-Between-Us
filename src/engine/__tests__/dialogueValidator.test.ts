@@ -40,6 +40,12 @@ describe('Camila dialogue graph', () => {
     expect(() => validateDialoguePair(getCamilaDialogue('ru'), getCamilaDialogue('en'))).not.toThrow();
     expect(() => validateDialogueRegistry(getDialogues('ru'))).not.toThrow();
   });
+
+  it('rejects a 17-year-old character and accepts an adult age of 24', () => {
+    const adult = getCamilaDialogue('ru');
+    expect(() => validateDialogue({ ...adult, character: { ...adult.character, age: 24 } })).not.toThrow();
+    expect(() => validateDialogue({ ...adult, character: { ...adult.character, age: 17 } })).toThrow(/at least 18/);
+  });
 });
 
 describe('reachable authored endings', () => {

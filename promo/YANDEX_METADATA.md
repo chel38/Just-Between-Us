@@ -4,13 +4,13 @@
 
 ## Общие поля
 
-- Version: `0.2`
+- Version: `0.3`
 - Platforms: Desktop, Mobile, Tablet, TV (после ручной проверки каждого устройства)
 - Orientation: Portrait and Landscape
 - Cloud save: Yes
 - Suggested age rating: 18+
 - Categories: Interactive Fiction, Visual Novel
-- Tags: story, messenger, choices, mystery, thriller, romance
+- Tags: story, messenger, choices, mystery, thriller, romance, adult flirt
 
 ## Русский
 
@@ -20,19 +20,19 @@
 
 ### Короткое описание
 
-Интерактивный сюжетный мессенджер, где каждое сообщение меняет доверие, тайну и финал.
+Сюжетный мессенджер с несколькими переписками, тайнами, отношениями и разными концовками.
 
 ### SEO-описание
 
-«Только между нами» — сюжетная игра в формате мессенджера с нелинейными диалогами, психологической интригой, памятью решений и семью концовками.
+«Только между нами» — нелинейная messenger-game для взрослых: уникальные чаты, выборы, память решений, психологические тайны, романтическое напряжение и 14 концовок.
 
 ### Описание
 
-Вы находите ключ от пустой квартиры, а на стене внутри — ваше имя. Напишите соседке Камиле первым и решите, кому доверять. Персонаж помнит ложь, уважение, риск и прежние обещания. Пять разных начал ведут через психологический триллер к семи концовкам, включая секретную. Все ответы заранее написаны: исход зависит только от ваших решений.
+Напишите первым и выберите, кем стать в чужой переписке: внимательным собеседником, уверенным флиртом, осторожным союзником или человеком, которому перестанут отвечать. Персонажи помнят ложь, уважение, давление и прежние обещания. Расследуйте тайну «Квартиры 47» вместе с Камилой или проведите ночь психологических проверок и взрослого флирта с Лерой в истории «После полуночи». Решения меняют отношения, открывают секреты, добровольные сюжетные фотографии и разные финалы. Все персонажи и изображённые лица совершеннолетние; события и переписки вымышлены.
 
 ### Как играть
 
-Выбирайте подготовленные сообщения в нижней части чата. Следите за реакциями Камилы, сопоставляйте детали и помните прежние ответы. Прогресс сохраняется автоматически. В настройках можно ускорить сообщения, изменить язык, звук, вибрацию и анимации.
+Выбирайте подготовленные сообщения в нижней части чата, следите за реакциями и сопоставляйте детали. Уважение границ влияет на доступные ветки так же, как доверие, любопытство и риск. Прогресс сохраняется автоматически. Язык RU/EN, скорость сообщений, звук, вибрация и анимации меняются в настройках.
 
 ## English
 
@@ -42,16 +42,16 @@ Just Between Us
 
 ### Short description
 
-An interactive story messenger where every reply changes trust, the mystery, and the ending.
+A story messenger with multiple chats, choices, relationships, mysteries, and different endings.
 
 ### SEO description
 
-Just Between Us is a nonlinear messenger story with psychological intrigue, remembered choices, and seven endings.
+Just Between Us is a nonlinear adult messenger game with unique chats, remembered choices, psychological mysteries, romantic tension, and 14 endings.
 
 ### Description
 
-You find a key to an empty apartment — and your name written on the wall inside. Message your neighbor Camila first and decide who to trust. She remembers lies, respect, risks, and old promises. Five distinct openings lead through a psychological thriller to seven endings, including a secret one. Every reply is authored in advance; only your decisions determine the outcome.
+Text first and decide who you become inside someone else’s conversation: a careful listener, a confident flirt, a cautious ally, or the person they stop answering. Characters remember lies, respect, pressure, and old promises. Investigate the mystery of Apartment 47 with Camila, or spend a night of psychological tests and adult flirting with Lera in After Midnight. Choices reshape relationships, reveal secrets, unlock voluntary story photos, and lead to different endings. All characters and persons depicted are adults; the events and conversations are fictional.
 
 ### How to play
 
-Choose an authored message from the reply panel. Watch Camila’s reactions, connect details, and remember what you said earlier. Progress saves automatically. Settings let you change message speed, language, sound, vibration, and motion.
+Choose an authored message from the reply panel, watch reactions, and connect details. Respecting boundaries changes available branches just as much as trust, curiosity, and risk. Progress saves automatically. RU/EN language, message speed, sound, vibration, and motion are available in Settings.

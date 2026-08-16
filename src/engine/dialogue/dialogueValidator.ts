@@ -15,6 +15,11 @@ export function validateDialogue(dialogue: DialogueDefinition): void {
   const choiceIds = new Set<string>();
   const nodes = new Map(dialogue.nodes.map((node) => [node.id, node]));
 
+  if (!Number.isInteger(dialogue.character.age) || dialogue.character.age < 18) {
+    issues.push(`${dialogue.id}: character age must be an integer of at least 18.`);
+  }
+  if (dialogue.contentRating !== '18+') issues.push(`${dialogue.id}: content rating must be 18+.`);
+
   for (const ending of dialogue.endings) {
     if (endingIds.has(ending.id)) issues.push(`${dialogue.id}/${ending.id}: duplicate ending ID.`);
     endingIds.add(ending.id);

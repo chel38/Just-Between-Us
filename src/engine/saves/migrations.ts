@@ -10,7 +10,7 @@ export function migrateSave(raw: UnknownSave | null): GameSave {
   // Migrations are applied in order. Never mutate the object read from storage.
   if (!migrated.saveVersion) migrated.saveVersion = 1;
 
-  if (migrated.saveVersion < 2) {
+  if ((migrated.saveVersion ?? 1) < 2) {
     migrated = {
       ...migrated,
       saveVersion: 2,
@@ -20,6 +20,16 @@ export function migrateSave(raw: UnknownSave | null): GameSave {
           migrateProgressV2(progress),
         ]),
       ),
+    };
+  }
+
+  if ((migrated.saveVersion ?? 1) < 3) {
+    migrated = {
+      ...migrated,
+      saveVersion: 3,
+      // v3 introduces an optional, versioned legal consent record. It remains
+      // absent until the adult user explicitly accepts the current notice.
+      legalConsent: migrated.legalConsent,
     };
   }
 

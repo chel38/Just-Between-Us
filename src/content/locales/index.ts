@@ -15,7 +15,7 @@ const ru = {
   cancel: 'Отмена', restart: 'Начать заново', blockedTitle: 'Вас добавили в чёрный список', storyComplete: 'История завершена',
   endingOf: 'Концовка', of: 'из', hint: '▶ Реклама → получить намёк', hintUnavailable: 'Реклама сейчас недоступна',
   aboutTitle: 'Только между нами', aboutText: 'Интерактивная сюжетная игра в формате мессенджера.',
-  ageNotice: 'Все персонажи романтических историй — совершеннолетние. Камила — 31 год.', version: 'Версия',
+  ageNotice: 'Все персонажи и изображённые лица в игре являются совершеннолетними (18+). Камила — 31 год, Лера — 24 года. Персонажи, события и переписки являются вымышленными.', version: 'Версия',
   back: 'Назад', statusNew: 'новая история', unread: 'непрочитанных', noMessages: 'Вы начинаете этот разговор.',
   earlier: 'Более ранние сообщения скрыты для производительности', chapter: 'Глава', theme: 'Тема', midnight: 'Полночь', violet: 'Фиолетовый туман',
   themeReward: 'Открыть тему за рекламу', themeUnlocked: 'Тема открыта', adNote: 'Основная история всегда доступна без рекламы.',
@@ -23,7 +23,10 @@ const ru = {
   opened: 'Открыто', openingApproaches: 'стартовых подходов', endingsCount: 'концовок', choicesRemembered: 'решения запоминаются',
   menu: 'Меню', exitTitle: 'Выйти из игры?', exitBody: 'Ваш прогресс сохранён. Вы сможете продолжить позже.', exit: 'Выйти',
   loading: 'Загрузка', loadingError: 'Не удалось подключиться к платформе. Проверьте соединение и попробуйте снова.', retry: 'Повторить',
-  stickyStatus: 'Sticky status', fullscreen: 'Полный экран', getHint: 'Получить намёк',
+  loadingPlatform: 'Подготовка платформы', loadingSdk: 'Подключение SDK', loadingLanguage: 'Определение языка', loadingPlayer: 'Загрузка игрока',
+  loadingSave: 'Загрузка прогресса', loadingMigration: 'Обновление сохранения', loadingLocalization: 'Подготовка перевода',
+  loadingDialogues: 'Проверка историй', loadingCriticalAssets: 'Загрузка интерфейса', loadingApp: 'Запуск приложения', loadingReady: 'Готово',
+  stickyStatus: 'Sticky status', fullscreen: 'Полный экран', getHint: 'Получить намёк', photoLoadError: 'Фото не загрузилось', photoRetry: 'Повторить',
 };
 
 type UiSchema = { [Key in keyof typeof ru]: string };
@@ -41,7 +44,7 @@ const en: UiSchema = {
   cancel: 'Cancel', restart: 'Restart', blockedTitle: 'You have been blocked', storyComplete: 'Story complete',
   endingOf: 'Ending', of: 'of', hint: '▶ Ad → get a hint', hintUnavailable: 'Ad is unavailable right now',
   aboutTitle: 'Just Between Us', aboutText: 'An interactive story game presented as a messenger.',
-  ageNotice: 'Every character in a romantic story is an adult. Camila is 31.', version: 'Version',
+  ageNotice: 'All characters and persons depicted in the game are adults (18+). Camila is 31 and Lera is 24. The characters, events, and conversations are fictional.', version: 'Version',
   back: 'Back', statusNew: 'new story', unread: 'unread', noMessages: 'You begin this conversation.',
   earlier: 'Earlier messages hidden for performance', chapter: 'Chapter', theme: 'Theme', midnight: 'Midnight', violet: 'Violet haze',
   themeReward: 'Unlock theme with ad', themeUnlocked: 'Theme unlocked', adNote: 'The main story is always available without ads.',
@@ -49,7 +52,10 @@ const en: UiSchema = {
   opened: 'Unlocked', openingApproaches: 'opening approaches', endingsCount: 'endings', choicesRemembered: 'choices are remembered',
   menu: 'Menu', exitTitle: 'Exit the game?', exitBody: 'Your progress is saved. You can continue later.', exit: 'Exit',
   loading: 'Loading', loadingError: 'Could not connect to the platform. Check your connection and try again.', retry: 'Retry',
-  stickyStatus: 'Sticky status', fullscreen: 'Fullscreen', getHint: 'Get a hint',
+  loadingPlatform: 'Preparing platform', loadingSdk: 'Connecting SDK', loadingLanguage: 'Detecting language', loadingPlayer: 'Loading player',
+  loadingSave: 'Loading progress', loadingMigration: 'Updating save', loadingLocalization: 'Preparing language',
+  loadingDialogues: 'Validating stories', loadingCriticalAssets: 'Loading interface', loadingApp: 'Starting application', loadingReady: 'Ready',
+  stickyStatus: 'Sticky status', fullscreen: 'Fullscreen', getHint: 'Get a hint', photoLoadError: 'Photo could not load', photoRetry: 'Retry',
 };
 
 const ui: Record<UiLanguage, UiSchema> = { ru, en };

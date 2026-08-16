@@ -2,6 +2,12 @@ import type { DialogueProgress } from './dialogue';
 
 export type LanguageSetting = 'auto' | 'ru' | 'en';
 
+export interface LegalConsent {
+  accepted: boolean;
+  version: number;
+  acceptedAt: number;
+}
+
 export interface GameSettings {
   soundEnabled: boolean;
   soundVolume: number;
@@ -22,10 +28,11 @@ export interface GameSave {
   endings: Record<string, string[]>;
   globalFlags: string[];
   lastOpenedDialog: string | null;
+  legalConsent?: LegalConsent;
   updatedAt: number;
 }
 
-export const CURRENT_SAVE_VERSION = 2;
+export const CURRENT_SAVE_VERSION = 3;
 
 export const DEFAULT_SETTINGS: GameSettings = {
   soundEnabled: true,

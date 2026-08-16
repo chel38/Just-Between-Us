@@ -4,6 +4,7 @@ export type DeviceType = 'desktop' | 'mobile' | 'tablet' | 'tv';
 export type Orientation = 'portrait' | 'landscape';
 export type RewardedSimulation = 'reward' | 'close' | 'error';
 export type StickyBannerReason = 'ADV_IS_NOT_CONNECTED' | 'UNKNOWN';
+export type PlatformStartupMilestone = 'platform' | 'sdk' | 'language' | 'player';
 
 export interface StickyBannerStatus {
   stickyAdvIsShowing: boolean;
@@ -137,10 +138,11 @@ export class YandexPlatform implements PlatformService {
 
   get isTV(): boolean { return this.deviceType === 'tv'; }
 
-  static async create(): Promise<YandexPlatform> {
+  static async create(onMilestone?: (milestone: PlatformStartupMilestone) => void): Promise<YandexPlatform> {
     await loadYandexSdk();
     if (!window.YaGames) throw new Error('Yandex Games SDK did not expose YaGames.');
     const sdk = await window.YaGames.init();
+    onMilestone?.('sdk');
 
     // Requirement 2.14: read the portal language immediately after SDK init.
     // This must happen before player authorization/cloud loading so the Yandex
@@ -148,11 +150,13 @@ export class YandexPlatform implements PlatformService {
     const language = sdk.environment.i18n.lang
       || sdk.environment.browser?.lang
       || 'en';
+    onMilestone?.('language');
 
     // Register lifecycle listeners before getPlayer(): startup advertising can
     // pause the game while player/cloud initialization is still pending.
     const platform = new YandexPlatform(sdk, language);
     await platform.initializePlayer();
+    onMilestone?.('player');
     log('Initialized', { language, authorized: platform.authorized, deviceType: platform.deviceType });
     return platform;
   }
@@ -352,9 +356,14 @@ function loadYandexSdk(): Promise<void> {
   return sdkLoadPromise;
 }
 
-export async function createPlatform(): Promise<PlatformService> {
+export async function createPlatform(onMilestone?: (milestone: PlatformStartupMilestone) => void): Promise<PlatformService> {
   const isLocalPreview = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   const yandexRequested = (!import.meta.env.DEV && !isLocalPreview) || new URLSearchParams(location.search).has('yandex');
-  if (yandexRequested) return YandexPlatform.create();
-  return new DevelopmentPlatform();
+  onMilestone?.('platform');
+  if (yandexRequested) return YandexPlatform.create(onMilestone);
+  const platform = new DevelopmentPlatform();
+  onMilestone?.('sdk');
+  onMilestone?.('language');
+  onMilestone?.('player');
+  return platform;
 }

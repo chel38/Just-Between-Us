@@ -35,9 +35,10 @@ export function resolveSourceText(
 export function resolveTranscriptMessage(
   message: TranscriptMessage,
   dialogue: DialogueDefinition,
-): { text: string; quote?: string } {
+): { text: string; quote?: string; image?: string; alt?: string } {
   const legacySourceId = message.sourceId ?? message.scriptMessageId;
   const inferredType = message.sourceType ?? (message.sender === 'player' ? 'player-choice' : message.sender === 'system' ? 'system' : 'script-message');
+  const localizedScriptMessage = legacySourceId ? getLookup(dialogue).messages.get(legacySourceId) : undefined;
   const text = resolveSourceText(legacySourceId, inferredType, dialogue)
     ?? message.fallbackText
     ?? message.text
@@ -45,7 +46,12 @@ export function resolveTranscriptMessage(
   const quote = resolveSourceText(message.quoteSourceId, undefined, dialogue)
     ?? message.quoteFallbackText
     ?? message.quote;
-  return { text, quote };
+  return {
+    text,
+    quote,
+    image: localizedScriptMessage?.image ?? message.image,
+    alt: localizedScriptMessage?.alt ?? message.alt,
+  };
 }
 
 export function resolveLastMessage(progressHistory: TranscriptMessage[] | undefined, dialogue: DialogueDefinition): string | undefined {

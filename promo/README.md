@@ -1,13 +1,24 @@
 # Yandex Games visual materials
 
-Актуальные размеры на август 2026:
+Актуальный набор для версии 0.3.0:
 
-- `icon-512x512.png` — обязательная иконка;
+- `icon-512x512.png` — иконка 512×512;
 - `icon-maskable-512x512.png` — вариант для круглой safe zone;
-- `cover-800x470.png` — обязательная обложка;
-- `screenshots/desktop-*.jpg` — 2 реальных кадра текущей production-сборки 1600×900;
-- `screenshots/mobile-*.jpg` — 2 реальных кадра текущей production-сборки 900×1600.
+- `cover-800x470.png` — обложка 800×470 без локализованного текста;
+- `screenshots/ru/desktop/*.jpg` — 4 русских production-кадра 1600×900;
+- `screenshots/ru/mobile/*.jpg` — 2 русских production-кадра 900×1600;
+- `screenshots/en/desktop/*.jpg` — 4 полностью английских production-кадра 1600×900;
+- `screenshots/en/mobile/*.jpg` — 2 полностью английских production-кадра 900×1600.
 
-Материалы не входят в игровой ZIP: их нужно загрузить в отдельные поля Developer Console. Они не содержат текста, поэтому иконка и обложка подходят для RU и EN.
+## Актуальные screenshots
 
-Каталожные тексты находятся в `YANDEX_METADATA.md`.
+| Локаль | Desktop | Mobile |
+|---|---|---|
+| RU | `home.jpg`, `chats.jpg`, `chat-camila.jpg`, `endings.jpg` | `chats.jpg`, `lera-choices.jpg` |
+| EN | `home.jpg`, `chats.jpg`, `chat-lera.jpg`, `endings.jpg` | `chats.jpg`, `lera-choices.jpg` |
+
+Все кадры сняты из production build, без debugger, device switch, mock-рекламы и ошибок. `lera-choices` использует явно отмеченный `promoSafe` стартовый node и не содержит story photo.
+
+Никогда не использовать в каталоге файлы из `public/assets/characters/lera/story/`: их manifest содержит `promoAllowed: false`. Identity reference и сюжетные кадры также не являются промо-материалами.
+
+Материалы не входят в игровой ZIP: их загружают в отдельные поля Developer Console. Каталожные тексты находятся в `YANDEX_METADATA.md`.

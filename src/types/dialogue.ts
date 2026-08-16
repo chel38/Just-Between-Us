@@ -78,6 +78,7 @@ export interface DialogueNode {
   onEnter?: Effects;
   adBreak?: boolean;
   hint?: string;
+  promoSafe?: boolean;
 }
 
 export interface Ending {
@@ -114,6 +115,7 @@ export interface Character {
 export interface DialogueDefinition {
   id: string;
   title: string;
+  contentRating: '18+';
   startNodeId: string;
   character: Character;
   nodes: DialogueNode[];

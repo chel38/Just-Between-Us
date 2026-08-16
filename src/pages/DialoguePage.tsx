@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, Clock3, Eye, Lightbulb, Maximize2, RotateCcw, Settings, ShieldAlert, Sparkles } from 'lucide-react';
+import { ArrowLeft, CheckCheck, Clock3, Eye, ImageOff, Lightbulb, Maximize2, RotateCcw, Settings, ShieldAlert, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar } from '../components/Avatar';
 import type { UiLanguage, UiStrings } from '../content/locales';
@@ -6,6 +6,7 @@ import { DialogueEngine } from '../engine/dialogue/dialogueEngine';
 import { resolveSourceText, resolveTranscriptMessage } from '../engine/dialogue/transcriptResolver';
 import { calculateTypingDelay, pausableDelay } from '../engine/typing/typingEngine';
 import { soundService } from '../services/soundService';
+import { preloadStoryImage } from '../services/storyImageLoader';
 import type { DialogueChoice, DialogueDefinition, DialogueProgress, Ending, TranscriptMessage } from '../types/dialogue';
 import type { GameSettings } from '../types/save';
 
@@ -88,6 +89,11 @@ export function DialoguePage(props: DialoguePageProps) {
         const pending = engineRef.current.pendingMessages(current)[0];
         if (!pending) break;
         const initialText = pending.text ?? '';
+        if (pending.kind === 'photo' && pending.image) {
+          await preloadStoryImage(pending.image).catch((error: unknown) => {
+            if (import.meta.env.DEV) console.warn('[StoryPhoto] Optional preload failed.', error);
+          });
+        }
         if (pending.kind === 'delay') {
           await pausableDelay(pending.delayMs ?? 500, controller.signal, () => pausedRef.current || document.hidden);
         } else {
@@ -170,7 +176,7 @@ export function DialoguePage(props: DialoguePageProps) {
         <div className="conversation-date">{ui.today}</div>
         {progress.history.length === 0 && <div className="empty-chat"><span><Eye /></span><p>{ui.noMessages}</p><small>{dialogue.character.name}<br />{dialogue.character.status}</small></div>}
         {progress.history.length > visibleHistory.length && <div className="history-limit"><Clock3 />{ui.earlier}</div>}
-        {resolvedHistory.map(({ message, text, quote }, index) => <MessageBubble key={message.id} message={message} text={text} quote={quote} grouped={resolvedHistory[index - 1]?.message.sender === message.sender} language={props.language} />)}
+        {resolvedHistory.map(({ message, text, quote, image, alt }, index) => <MessageBubble key={message.id} message={message} text={text} quote={quote} image={image} alt={alt} grouped={resolvedHistory[index - 1]?.message.sender === message.sender} language={props.language} ui={ui} />)}
         {typing && <TypingBubble label={`${dialogue.character.name} ${ui.typing}`} />}
         {ending && <EndingCard ending={ending} total={dialogue.endings.length} ui={ui} onRestart={props.onRestart} />}
       </div>
@@ -187,19 +193,26 @@ export function DialoguePage(props: DialoguePageProps) {
   );
 }
 
-function MessageBubble({ message, text, quote, grouped, language }: { message: TranscriptMessage; text: string; quote?: string; grouped: boolean; language: UiLanguage }) {
+function MessageBubble({ message, text, quote, image, alt, grouped, language, ui }: { message: TranscriptMessage; text: string; quote?: string; image?: string; alt?: string; grouped: boolean; language: UiLanguage; ui: UiStrings }) {
   if (message.sender === 'system') return <div className={`system-message system-message--${message.kind}`}>{message.kind === 'deleted' && <ShieldAlert size={13} />}{text}</div>;
   return (
     <div className={`message-row message-row--${message.sender} ${grouped ? 'is-grouped' : ''}`}>
       <div className="message-bubble">
         {quote && <blockquote>{quote}</blockquote>}
-        {message.image && <img src={message.image} alt={message.alt ?? ''} loading="lazy" />}
+        {image && <StoryPhoto src={image} alt={alt ?? ''} ui={ui} />}
         <p>{text}</p>
         <span className="message-meta"><time>{new Date(message.timestamp).toLocaleTimeString(language === 'ru' ? 'ru-RU' : 'en-US', { hour: '2-digit', minute: '2-digit' })}</time>{message.sender === 'player' && <CheckCheck size={14} />}</span>
         {message.reaction && <b className="message-reaction">{message.reaction}</b>}
       </div>
     </div>
   );
+}
+
+function StoryPhoto({ src, alt, ui }: { src: string; alt: string; ui: UiStrings }) {
+  const [attempt, setAttempt] = useState(0);
+  const [failed, setFailed] = useState(false);
+  if (failed) return <div className="story-photo-fallback" role="img" aria-label={alt}><ImageOff /><span>{ui.photoLoadError}</span><button onClick={() => { setFailed(false); setAttempt((value) => value + 1); }}>{ui.photoRetry}</button></div>;
+  return <img key={attempt} className="story-photo" src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
 }
 
 function TypingBubble({ label }: { label: string }) {

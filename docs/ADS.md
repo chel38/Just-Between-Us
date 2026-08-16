@@ -4,7 +4,9 @@
 
 На loading, SDK init, save loading и сразу после `ready()` sticky не запрашивается. Первое осмысленное действие — открытие списка диалогов или конкретной истории. Тогда PlatformService проверяет `getBannerAdvStatus()`: уже видимый banner не вызывается повторно, `reason` считается недоступностью, иначе вызывается `showBannerAdv()`.
 
-При подтверждённом status layout резервирует область снизу для mobile portrait и справа для landscape/desktop. Production не рисует собственную рекламу. DevelopmentPlatform только логирует явную debug simulation.
+При подтверждённом status единый `calculateDeviceLayout()` учитывает device type, orientation, `visualViewport`, safe-area и факт показа sticky. Он вычисляет ограниченный reserve снизу для mobile/tablet portrait и справа для landscape/desktop/TV. Универсальных `padding-right: 320px` или фиксированных bottom-отступов нет. Production не двигает, не масштабирует и не стилизует iframe рекламы — меняется только доступная область приложения. DevelopmentPlatform только логирует явную debug simulation.
+
+Локальный `?promo=1` отключает запрос sticky только на localhost для чистых production-like screenshots. На опубликованном домене параметр не действует.
 
 ## Fullscreen и rewarded
 

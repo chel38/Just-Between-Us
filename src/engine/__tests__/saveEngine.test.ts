@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PlatformService } from '../../platform/platform';
 import { CURRENT_SAVE_VERSION, type GameSave } from '../../types/save';
 import { migrateSave } from '../saves/migrations';
-import { LEGACY_STORAGE_KEY, SaveEngine, STORAGE_KEY } from '../saves/saveEngine';
+import { LEGACY_STORAGE_KEY, PREVIOUS_STORAGE_KEY, SaveEngine, STORAGE_KEY } from '../saves/saveEngine';
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -63,11 +63,11 @@ describe('save migrations', () => {
     expect(migrated.dialogs.camila.revealedHints).toEqual({});
   });
 
-  it('reads the old local key, keeps it, and writes the v2 key', async () => {
+  it('reads the old local key, keeps it, and writes the v3 key', async () => {
     storage.setItem(LEGACY_STORAGE_KEY, JSON.stringify({ saveVersion: 1, dialogs: {}, endings: {}, globalFlags: [], lastOpenedDialog: null, updatedAt: 10 }));
     const { platform } = platformMock();
     const loaded = await new SaveEngine(platform).load();
-    expect(loaded.saveVersion).toBe(2);
+    expect(loaded.saveVersion).toBe(3);
     expect(storage.getItem(STORAGE_KEY)).not.toBeNull();
     expect(storage.getItem(LEGACY_STORAGE_KEY)).not.toBeNull();
   });
@@ -77,7 +77,31 @@ describe('save migrations', () => {
     legacyCloud.saveVersion = 1;
     const { platform, saveCloud } = platformMock(legacyCloud);
     const loaded = await new SaveEngine(platform).load();
-    expect(loaded.saveVersion).toBe(2);
-    expect(saveCloud).toHaveBeenCalledWith(expect.objectContaining({ saveVersion: 2 }), true);
+    expect(loaded.saveVersion).toBe(3);
+    expect(saveCloud).toHaveBeenCalledWith(expect.objectContaining({ saveVersion: 3 }), true);
+  });
+
+  it('migrates a v0.2 save without changing Camila progress, endings, or settings', async () => {
+    const v2 = migrateSave({ saveVersion: 1, dialogs: {}, endings: {}, globalFlags: [], lastOpenedDialog: null, updatedAt: 1 } as never);
+    v2.saveVersion = 2;
+    v2.dialogs.camila = {
+      dialogueId: 'camila', status: 'active', currentNodeId: 'warm_2', history: [],
+      relationship: { trust: 4, attraction: 1, suspicion: 2, irritation: 0, curiosity: 3, respect: 5 },
+      flags: ['camila_safe'], choiceHistory: ['start_warm'], seenNodes: ['start', 'warm_1', 'warm_2'],
+      endingsUnlocked: ['good_dawn'], awaitingChoice: true, processedMessageIds: ['warm_1_a'], revealedHints: { warm_2: true },
+      startedAt: 10, updatedAt: 20, unread: 0,
+    };
+    v2.endings.camila = ['good_dawn'];
+    v2.settings.language = 'en';
+    storage.setItem(PREVIOUS_STORAGE_KEY, JSON.stringify(v2));
+
+    const { platform } = platformMock();
+    const loaded = await new SaveEngine(platform).load();
+
+    expect(loaded.saveVersion).toBe(3);
+    expect(loaded.legalConsent).toBeUndefined();
+    expect(loaded.dialogs.camila).toEqual(v2.dialogs.camila);
+    expect(loaded.endings.camila).toEqual(['good_dawn']);
+    expect(loaded.settings.language).toBe('en');
   });
 });
