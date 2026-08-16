@@ -132,7 +132,7 @@ export class YandexPlatform implements PlatformService {
     language: string,
   ) {
     this.language = language;
-    this.deviceType = sdk.deviceInfo().type;
+    this.deviceType = sdk.deviceInfo.type;
     this.bindSdkEvents();
   }
 

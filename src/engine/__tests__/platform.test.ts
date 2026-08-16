@@ -50,13 +50,13 @@ describe('development ad lifecycle', () => {
       off: () => undefined,
       dispatchEvent: async () => undefined,
       features: {},
-      deviceInfo: () => ({
+      deviceInfo: {
         type: 'desktop' as const,
         isMobile: () => false,
         isDesktop: () => true,
         isTablet: () => false,
         isTV: () => false,
-      }),
+      },
       screen: { fullscreen: { STATUS_ON: 'on' as const, STATUS_OFF: 'off' as const, status: 'off' as const, request: async () => {}, exit: async () => {} } },
       adv: {},
     };
@@ -67,6 +67,7 @@ describe('development ad lifecycle', () => {
 
     expect(platform.kind).toBe('yandex');
     expect(platform.language).toBe('en');
+    expect(platform.deviceType).toBe('desktop');
     expect(startupEvents).toEqual(['i18n', 'on:game_api_pause', 'on:game_api_resume', 'player']);
   });
 
@@ -80,7 +81,7 @@ describe('development ad lifecycle', () => {
       on: (eventName: string, listener: () => void) => { listeners.set(eventName, listener); }, off: () => undefined,
       dispatchEvent: async () => undefined,
       features: {},
-      deviceInfo: () => ({ type: 'desktop' as const, isMobile: () => false, isDesktop: () => true, isTablet: () => false, isTV: () => false }),
+      deviceInfo: { type: 'desktop' as const, isMobile: () => false, isDesktop: () => true, isTablet: () => false, isTV: () => false },
       screen: { fullscreen: { STATUS_ON: 'on' as const, STATUS_OFF: 'off' as const, status: 'off' as const, request: async () => {}, exit: async () => {} } },
       adv: {},
     };
@@ -113,7 +114,7 @@ describe('development ad lifecycle', () => {
       EVENTS: { EXIT: 'EXIT' as const, HISTORY_BACK: 'HISTORY_BACK' as const, ACCOUNT_SELECTION_DIALOG_OPENED: 'ACCOUNT_SELECTION_DIALOG_OPENED' as const, ACCOUNT_SELECTION_DIALOG_CLOSED: 'ACCOUNT_SELECTION_DIALOG_CLOSED' as const },
       on: (eventName: string, listener: () => void) => { listeners.set(eventName, listener); }, off: () => undefined, dispatchEvent,
       features: {},
-      deviceInfo: () => ({ type: 'tv' as const, isMobile: () => false, isDesktop: () => false, isTablet: () => false, isTV: () => true }),
+      deviceInfo: { type: 'tv' as const, isMobile: () => false, isDesktop: () => false, isTablet: () => false, isTV: () => true },
       screen: { fullscreen: { STATUS_ON: 'on' as const, STATUS_OFF: 'off' as const, status: 'on' as const, request: async () => {}, exit: async () => {} } },
       adv: {},
     };

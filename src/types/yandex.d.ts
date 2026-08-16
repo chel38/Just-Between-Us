@@ -20,7 +20,7 @@ interface YandexGamesSdk {
     LoadingAPI?: { ready(): Promise<void> | void };
     GameplayAPI?: { start(): Promise<void> | void; stop(): Promise<void> | void };
   };
-  deviceInfo(): {
+  deviceInfo: {
     type: 'desktop' | 'mobile' | 'tablet' | 'tv';
     isMobile(): boolean;
     isDesktop(): boolean;
