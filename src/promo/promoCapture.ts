@@ -7,6 +7,6 @@ export function isPromoCaptureMode(locationLike: Pick<Location, 'hostname' | 'se
 
 export function getPromoSafeNodeIds(dialogue: DialogueDefinition): string[] {
   return dialogue.nodes
-    .filter((node) => node.promoSafe === true && node.messages.every((message) => message.kind !== 'photo'))
+    .filter((node) => node.promoSafe === true && node.messages.every((message) => message.kind !== 'photo' && message.kind !== 'attachment'))
     .map((node) => node.id);
 }

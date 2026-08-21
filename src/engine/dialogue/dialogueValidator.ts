@@ -54,6 +54,26 @@ export function validateDialogue(dialogue: DialogueDefinition): void {
         if (!message.alt?.trim()) issues.push(`${dialogue.id}/${node.id}/${message.id}: localized photo alt is missing.`);
         if (node.promoSafe === true) issues.push(`${dialogue.id}/${node.id}/${message.id}: story photo cannot be marked promo-safe.`);
       }
+      if (message.kind === 'attachment') {
+        const attachment = message.attachment;
+        if (!attachment) issues.push(`${dialogue.id}/${node.id}/${message.id}: attachment metadata is missing.`);
+        else {
+          if (!attachment.id.trim() || !attachment.title.trim() || !attachment.source.trim() || !attachment.storyPurpose.trim()) {
+            issues.push(`${dialogue.id}/${node.id}/${message.id}: attachment identity, source, title, and story purpose are required.`);
+          }
+          if (attachment.promoAllowed !== false) issues.push(`${dialogue.id}/${node.id}/${message.id}: story attachment must be blocked from promo.`);
+          if (attachment.type === 'photo' && (!attachment.asset?.trim() || !attachment.alt?.trim())) {
+            issues.push(`${dialogue.id}/${node.id}/${message.id}: photo attachment requires asset and localized alt.`);
+          }
+          if ((attachment.type === 'chat_screenshot' || attachment.type === 'forwarded_message') && !attachment.entries?.length) {
+            issues.push(`${dialogue.id}/${node.id}/${message.id}: chat attachment requires localized entries.`);
+          }
+          if (attachment.type === 'document' && !attachment.fields?.length) {
+            issues.push(`${dialogue.id}/${node.id}/${message.id}: document attachment requires localized fields.`);
+          }
+          if (node.promoSafe === true) issues.push(`${dialogue.id}/${node.id}/${message.id}: attachment node cannot be marked promo-safe.`);
+        }
+      }
     }
   }
 
@@ -144,6 +164,7 @@ function structuralNodeLogic(node: DialogueDefinition['nodes'][number]): unknown
     sceneContext: node.sceneContext,
     messages: node.messages.map((message) => ({
       id: message.id,
+      sender: message.sender,
       kind: message.kind,
       delayMs: message.delayMs,
       typing: message.typing,
@@ -151,6 +172,15 @@ function structuralNodeLogic(node: DialogueDefinition['nodes'][number]): unknown
       reaction: message.reaction,
       quoteSourceId: message.quoteSourceId,
       image: message.image,
+      attachment: message.attachment ? {
+        id: message.attachment.id,
+        type: message.attachment.type,
+        asset: message.attachment.asset,
+        promoAllowed: message.attachment.promoAllowed,
+        adultCharacters: message.attachment.adultCharacters,
+        entryIds: message.attachment.entries?.map((entry) => entry.id),
+        fieldCount: message.attachment.fields?.length,
+      } : undefined,
       conditions: message.conditions,
     })),
     choices: node.choices?.map((choice) => ({

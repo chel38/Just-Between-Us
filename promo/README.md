@@ -1,6 +1,6 @@
 # Yandex Games visual materials
 
-Актуальный набор для версии 0.3.0:
+Актуальный набор для версии 0.6.0:
 
 - `icon-512x512.png` — иконка 512×512;
 - `icon-maskable-512x512.png` — вариант для круглой safe zone;
@@ -19,6 +19,6 @@
 
 Все кадры сняты из production build, без debugger, device switch, mock-рекламы и ошибок. `lera-choices` использует явно отмеченный `promoSafe` стартовый node и не содержит story photo.
 
-Никогда не использовать в каталоге файлы из `public/assets/characters/lera/story/`: их manifest содержит `promoAllowed: false`. Identity reference и сюжетные кадры также не являются промо-материалами.
+Никогда не использовать в каталоге файлы из `public/assets/characters/lera/story/` и `public/assets/characters/lubov/story/`: их manifest содержит `promoAllowed: false`. Identity reference и сюжетные кадры также не являются промо-материалами.
 
 Материалы не входят в игровой ZIP: их загружают в отдельные поля Developer Console. Каталожные тексты находятся в `YANDEX_METADATA.md`.

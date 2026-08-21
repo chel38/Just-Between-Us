@@ -4,7 +4,7 @@
 
 ## Общие поля
 
-- Version: `0.3`
+- Version: `0.6`
 - Platforms: Desktop, Mobile, Tablet, TV (после ручной проверки каждого устройства)
 - Orientation: Portrait and Landscape
 - Cloud save: Yes
@@ -24,11 +24,11 @@
 
 ### SEO-описание
 
-«Только между нами» — нелинейная messenger-game для взрослых: уникальные чаты, выборы, память решений, психологические тайны, романтическое напряжение и 14 концовок.
+«Только между нами» — нелинейная messenger-game для взрослых: три уникальных чата, память решений, психологические тайны, отношения и 23 концовки.
 
 ### Описание
 
-Напишите первым и выберите, кем стать в чужой переписке: внимательным собеседником, уверенным флиртом, осторожным союзником или человеком, которому перестанут отвечать. Персонажи помнят ложь, уважение, давление и прежние обещания. Расследуйте тайну «Квартиры 47» вместе с Камилой или проведите ночь психологических проверок и взрослого флирта с Лерой в истории «После полуночи». Решения меняют отношения, открывают секреты, добровольные сюжетные фотографии и разные финалы. Все персонажи и изображённые лица совершеннолетние; события и переписки вымышлены.
+Напишите первым и выберите, кем стать в чужой переписке: внимательным собеседником, уверенным флиртом, осторожным союзником или человеком, которому перестанут отвечать. Персонажи помнят ложь, уважение, давление и прежние обещания. Расследуйте тайну «Квартиры 47» вместе с Камилой, проведите ночь психологических проверок с Лерой или разберите доказательства измены и будущее брака с Любовью в «Последней лжи». Решения меняют отношения, открывают секреты, сюжетные вложения и разные финалы. Все персонажи и изображённые лица совершеннолетние; события, документы и переписки вымышлены.
 
 ### Как играть
 
@@ -46,11 +46,11 @@ A story messenger with multiple chats, choices, relationships, mysteries, and di
 
 ### SEO description
 
-Just Between Us is a nonlinear adult messenger game with unique chats, remembered choices, psychological mysteries, romantic tension, and 14 endings.
+Just Between Us is a nonlinear adult messenger game with three unique chats, remembered choices, psychological mysteries, relationships, and 23 endings.
 
 ### Description
 
-Text first and decide who you become inside someone else’s conversation: a careful listener, a confident flirt, a cautious ally, or the person they stop answering. Characters remember lies, respect, pressure, and old promises. Investigate the mystery of Apartment 47 with Camila, or spend a night of psychological tests and adult flirting with Lera in After Midnight. Choices reshape relationships, reveal secrets, unlock voluntary story photos, and lead to different endings. All characters and persons depicted are adults; the events and conversations are fictional.
+Text first and decide who you become inside someone else’s conversation: a careful listener, a confident flirt, a cautious ally, or the person they stop answering. Characters remember lies, respect, pressure, and old promises. Investigate Apartment 47 with Camila, spend a night of psychological tests with Lera, or examine evidence of betrayal and decide the future of a marriage with Lyubov in The Last Lie. Choices reshape relationships, reveal secrets, unlock story attachments, and lead to different endings. All characters and persons depicted are adults; the events, documents, and conversations are fictional.
 
 ### How to play
 

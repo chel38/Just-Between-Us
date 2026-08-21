@@ -25,7 +25,7 @@ export class DialogueEngine {
       choiceHistory: [],
       seenNodes: [start.id],
       endingsUnlocked: [],
-      awaitingChoice: true,
+      awaitingChoice: start.messages.length === 0,
       processedMessageIds: [],
       revealedHints: {},
       startedAt: null,
@@ -112,7 +112,7 @@ export class DialogueEngine {
       sourceId: message.id,
       fallbackText: text,
       scriptMessageId: message.id,
-      sender: message.sender === 'system' ? 'system' : 'character',
+      sender: message.sender === 'system' ? 'system' : message.sender === 'player' ? 'player' : 'character',
       kind: message.kind ?? 'message',
       timestamp: now,
       reaction: message.reaction,
@@ -121,6 +121,7 @@ export class DialogueEngine {
       quote: message.quote,
       image: message.image,
       alt: message.alt,
+      attachment: message.attachment,
     };
     const characterState = message.kind === 'statusChanged'
       ? { characterStatus: text, characterStatusSourceId: message.id }

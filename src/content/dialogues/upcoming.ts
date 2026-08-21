@@ -8,22 +8,8 @@ export interface UpcomingDialogue {
 }
 
 const localizedUpcomingDialogues: Record<UiLanguage, UpcomingDialogue[]> = {
-  ru: [
-    {
-      id: 'lyubov',
-      characterName: 'Любовь',
-      preview: 'Новая история уже готовится.',
-      status: 'Появится скоро',
-    },
-  ],
-  en: [
-    {
-      id: 'lyubov',
-      characterName: 'Lyubov',
-      preview: 'A new story is already in the works.',
-      status: 'Coming soon',
-    },
-  ],
+  ru: [],
+  en: [],
 };
 
 export function getUpcomingDialogues(language: UiLanguage): UpcomingDialogue[] {

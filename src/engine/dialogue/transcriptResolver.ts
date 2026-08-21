@@ -1,4 +1,4 @@
-import type { DialogueDefinition, ScriptMessage, TranscriptMessage } from '../../types/dialogue';
+import type { DialogueDefinition, ScriptMessage, StoryAttachment, TranscriptMessage } from '../../types/dialogue';
 
 interface TranscriptLookup {
   messages: Map<string, ScriptMessage>;
@@ -35,7 +35,7 @@ export function resolveSourceText(
 export function resolveTranscriptMessage(
   message: TranscriptMessage,
   dialogue: DialogueDefinition,
-): { text: string; quote?: string; image?: string; alt?: string } {
+): { text: string; quote?: string; image?: string; alt?: string; attachment?: StoryAttachment } {
   const legacySourceId = message.sourceId ?? message.scriptMessageId;
   const inferredType = message.sourceType ?? (message.sender === 'player' ? 'player-choice' : message.sender === 'system' ? 'system' : 'script-message');
   const localizedScriptMessage = legacySourceId ? getLookup(dialogue).messages.get(legacySourceId) : undefined;
@@ -51,6 +51,7 @@ export function resolveTranscriptMessage(
     quote,
     image: localizedScriptMessage?.image ?? message.image,
     alt: localizedScriptMessage?.alt ?? message.alt,
+    attachment: localizedScriptMessage?.attachment ?? message.attachment,
   };
 }
 

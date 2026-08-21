@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, Clock3, Eye, ImageOff, Lightbulb, Maximize2, RotateCcw, Settings, ShieldAlert, Sparkles } from 'lucide-react';
+import { ArrowLeft, CheckCheck, Clock3, Eye, FileText, Forward, ImageOff, Lightbulb, Maximize2, MessageSquareText, Paperclip, RotateCcw, Settings, ShieldAlert, Sparkles, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar } from '../components/Avatar';
 import type { UiLanguage, UiStrings } from '../content/locales';
@@ -7,7 +7,7 @@ import { resolveSourceText, resolveTranscriptMessage } from '../engine/dialogue/
 import { calculateTypingDelay, pausableDelay } from '../engine/typing/typingEngine';
 import { soundService } from '../services/soundService';
 import { preloadStoryImage } from '../services/storyImageLoader';
-import type { DialogueChoice, DialogueDefinition, DialogueProgress, Ending, TranscriptMessage } from '../types/dialogue';
+import type { DialogueChoice, DialogueDefinition, DialogueProgress, Ending, StoryAttachment, TranscriptMessage } from '../types/dialogue';
 import type { GameSettings } from '../types/save';
 
 interface DialoguePageProps {
@@ -39,6 +39,7 @@ export function DialoguePage(props: DialoguePageProps) {
   const [typing, setTyping] = useState(false);
   const [hintError, setHintError] = useState(false);
   const [hintLoading, setHintLoading] = useState(false);
+  const [activeAttachment, setActiveAttachment] = useState<StoryAttachment | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const wasAtBottomRef = useRef(true);
 
@@ -89,8 +90,9 @@ export function DialoguePage(props: DialoguePageProps) {
         const pending = engineRef.current.pendingMessages(current)[0];
         if (!pending) break;
         const initialText = pending.text ?? '';
-        if (pending.kind === 'photo' && pending.image) {
-          await preloadStoryImage(pending.image).catch((error: unknown) => {
+        const preloadAsset = pending.kind === 'photo' ? pending.image : pending.attachment?.asset;
+        if (preloadAsset) {
+          await preloadStoryImage(preloadAsset).catch((error: unknown) => {
             if (import.meta.env.DEV) console.warn('[StoryPhoto] Optional preload failed.', error);
           });
         }
@@ -140,6 +142,18 @@ export function DialoguePage(props: DialoguePageProps) {
   const status = resolveSourceText(progress.characterStatusSourceId, 'system', dialogue) ?? progress.characterStatus ?? dialogue.character.status;
   const hintRevealed = Boolean(progress.revealedHints?.[node.id]);
 
+  useEffect(() => {
+    if (!activeAttachment) return;
+    const closeOnBack = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' || event.key === 'Backspace' || event.key === 'BrowserBack' || event.key === 'GoBack') {
+        event.preventDefault();
+        setActiveAttachment(null);
+      }
+    };
+    window.addEventListener('keydown', closeOnBack, true);
+    return () => window.removeEventListener('keydown', closeOnBack, true);
+  }, [activeAttachment]);
+
   const choose = (choice: DialogueChoice) => {
     setHintError(false);
     props.onMeaningfulInteraction();
@@ -176,7 +190,7 @@ export function DialoguePage(props: DialoguePageProps) {
         <div className="conversation-date">{ui.today}</div>
         {progress.history.length === 0 && <div className="empty-chat"><span><Eye /></span><p>{ui.noMessages}</p><small>{dialogue.character.name}<br />{dialogue.character.status}</small></div>}
         {progress.history.length > visibleHistory.length && <div className="history-limit"><Clock3 />{ui.earlier}</div>}
-        {resolvedHistory.map(({ message, text, quote, image, alt }, index) => <MessageBubble key={message.id} message={message} text={text} quote={quote} image={image} alt={alt} grouped={resolvedHistory[index - 1]?.message.sender === message.sender} language={props.language} ui={ui} />)}
+        {resolvedHistory.map(({ message, text, quote, image, alt, attachment }, index) => <MessageBubble key={message.id} message={message} text={text} quote={quote} image={image} alt={alt} attachment={attachment} grouped={resolvedHistory[index - 1]?.message.sender === message.sender} language={props.language} ui={ui} onOpenAttachment={setActiveAttachment} />)}
         {typing && <TypingBubble label={`${dialogue.character.name} ${ui.typing}`} />}
         {ending && <EndingCard ending={ending} total={dialogue.endings.length} ui={ui} onRestart={props.onRestart} />}
       </div>
@@ -189,17 +203,19 @@ export function DialoguePage(props: DialoguePageProps) {
           <div className="choice-list">{choices.map((choice, index) => <button key={choice.id} className="choice-button" onClick={() => choose(choice)} data-tv-focus><span>{index + 1}</span><p>{choice.text}</p></button>)}</div>
         </> : <div className="reply-wait" aria-label={ui.typing}><i /><i /><i /></div>}
       </footer>}
+      {activeAttachment && <AttachmentViewer attachment={activeAttachment} ui={ui} onClose={() => setActiveAttachment(null)} />}
     </div>
   );
 }
 
-function MessageBubble({ message, text, quote, image, alt, grouped, language, ui }: { message: TranscriptMessage; text: string; quote?: string; image?: string; alt?: string; grouped: boolean; language: UiLanguage; ui: UiStrings }) {
+function MessageBubble({ message, text, quote, image, alt, attachment, grouped, language, ui, onOpenAttachment }: { message: TranscriptMessage; text: string; quote?: string; image?: string; alt?: string; attachment?: StoryAttachment; grouped: boolean; language: UiLanguage; ui: UiStrings; onOpenAttachment: (attachment: StoryAttachment) => void }) {
   if (message.sender === 'system') return <div className={`system-message system-message--${message.kind}`}>{message.kind === 'deleted' && <ShieldAlert size={13} />}{text}</div>;
   return (
     <div className={`message-row message-row--${message.sender} ${grouped ? 'is-grouped' : ''}`}>
       <div className="message-bubble">
         {quote && <blockquote>{quote}</blockquote>}
-        {image && <StoryPhoto src={image} alt={alt ?? ''} ui={ui} />}
+        {image && <StoryPhoto src={image} alt={alt ?? ''} ui={ui} onOpen={() => onOpenAttachment({ id: message.sourceId ?? message.id, type: 'photo', title: ui.evidence, source: '', asset: image, alt, storyPurpose: 'legacy-story-photo', promoAllowed: false, adultCharacters: true })} />}
+        {attachment && <AttachmentCard attachment={attachment} ui={ui} onOpen={() => onOpenAttachment(attachment)} />}
         <p>{text}</p>
         <span className="message-meta"><time>{new Date(message.timestamp).toLocaleTimeString(language === 'ru' ? 'ru-RU' : 'en-US', { hour: '2-digit', minute: '2-digit' })}</time>{message.sender === 'player' && <CheckCheck size={14} />}</span>
         {message.reaction && <b className="message-reaction">{message.reaction}</b>}
@@ -208,11 +224,61 @@ function MessageBubble({ message, text, quote, image, alt, grouped, language, ui
   );
 }
 
-function StoryPhoto({ src, alt, ui }: { src: string; alt: string; ui: UiStrings }) {
+function StoryPhoto({ src, alt, ui, onOpen }: { src: string; alt: string; ui: UiStrings; onOpen: () => void }) {
   const [attempt, setAttempt] = useState(0);
   const [failed, setFailed] = useState(false);
   if (failed) return <div className="story-photo-fallback" role="img" aria-label={alt}><ImageOff /><span>{ui.photoLoadError}</span><button onClick={() => { setFailed(false); setAttempt((value) => value + 1); }}>{ui.photoRetry}</button></div>;
-  return <img key={attempt} className="story-photo" src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+  return <button className="story-photo-button" onClick={onOpen} aria-label={ui.attachmentOpen} data-tv-focus><img key={attempt} className="story-photo" src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} /></button>;
+}
+
+function AttachmentIcon({ type }: { type: StoryAttachment['type'] }) {
+  if (type === 'forwarded_message') return <Forward />;
+  if (type === 'chat_screenshot') return <MessageSquareText />;
+  if (type === 'document') return <FileText />;
+  return <Paperclip />;
+}
+
+function AttachmentCard({ attachment, ui, onOpen }: { attachment: StoryAttachment; ui: UiStrings; onOpen: () => void }) {
+  if (attachment.type === 'forwarded_message') {
+    const entry = attachment.entries?.[0];
+    return <button className="attachment-forward" onClick={onOpen} aria-label={ui.attachmentOpen} data-tv-focus><span><Forward />{ui.forwarded} · {entry?.author}</span><strong>{entry?.text}</strong><small>{entry?.timestamp ?? attachment.sourceTimestamp}</small></button>;
+  }
+  return <button className={`attachment-card attachment-card--${attachment.type}`} onClick={onOpen} aria-label={`${ui.attachmentOpen}: ${attachment.title}`} data-tv-focus>
+    {attachment.type === 'photo' && attachment.asset
+      ? <img src={attachment.asset} alt={attachment.alt ?? ''} loading="lazy" decoding="async" />
+      : <span className="attachment-card__icon"><AttachmentIcon type={attachment.type} /></span>}
+    <span className="attachment-card__body"><small>{attachment.type === 'document' ? ui.document : attachment.type === 'chat_screenshot' ? ui.chatScreenshot : ui.evidence}</small><strong>{attachment.title}</strong><em>{attachment.subtitle ?? attachment.source}</em></span>
+    <Maximize2 />
+  </button>;
+}
+
+function AttachmentContent({ attachment }: { attachment: StoryAttachment }) {
+  if (attachment.type === 'photo' && attachment.asset) {
+    return <AttachmentPhoto attachment={attachment} />;
+  }
+  if (attachment.type === 'chat_screenshot' || attachment.type === 'forwarded_message') {
+    return <div className={`embedded-chat embedded-chat--${attachment.type}`}>
+      {attachment.entries?.map((entry) => <article key={entry.id}><span>{entry.author}<time>{entry.timestamp}</time></span><p>{entry.text}</p></article>)}
+    </div>;
+  }
+  return <div className="embedded-document"><span className="embedded-document__mark"><FileText /></span><h3>{attachment.title}</h3><p>{attachment.subtitle}</p><dl>{attachment.fields?.map((field) => <div key={`${field.label}-${field.value}`} className={field.emphasis ? 'is-emphasis' : ''}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}</dl></div>;
+}
+
+function AttachmentPhoto({ attachment }: { attachment: StoryAttachment }) {
+  const [zoomed, setZoomed] = useState(false);
+  return <button className={`attachment-viewer__photo-button ${zoomed ? 'is-zoomed' : ''}`} onClick={() => setZoomed((value) => !value)} aria-label={attachment.actionLabel ?? attachment.title} data-tv-focus>
+    <img className="attachment-viewer__photo" src={attachment.asset} alt={attachment.alt ?? ''} />
+  </button>;
+}
+
+function AttachmentViewer({ attachment, ui, onClose }: { attachment: StoryAttachment; ui: UiStrings; onClose: () => void }) {
+  return <div className="attachment-viewer" role="dialog" aria-modal="true" aria-label={attachment.title} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <section className={`attachment-viewer__panel attachment-viewer__panel--${attachment.type}`}>
+      <header><div><small>{attachment.type === 'forwarded_message' ? ui.forwarded : attachment.type === 'document' ? ui.document : attachment.type === 'chat_screenshot' ? ui.chatScreenshot : ui.evidence}</small><strong>{attachment.title}</strong></div><button className="icon-button" onClick={onClose} aria-label={ui.attachmentClose} autoFocus data-tv-focus><X /></button></header>
+      <div className="attachment-viewer__content"><AttachmentContent attachment={attachment} /></div>
+      <footer><span>{ui.attachmentSource}: {attachment.source}</span>{attachment.sourceTimestamp && <time>{attachment.sourceTimestamp}</time>}</footer>
+    </section>
+  </div>;
 }
 
 function TypingBubble({ label }: { label: string }) {

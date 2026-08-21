@@ -17,7 +17,7 @@ const ru = {
   cancel: 'Отмена', restart: 'Начать заново', blockedTitle: 'Вас добавили в чёрный список', storyComplete: 'История завершена',
   endingOf: 'Концовка', of: 'из', hint: '▶ Реклама → получить намёк', hintUnavailable: 'Реклама сейчас недоступна',
   aboutTitle: 'Только между нами', aboutText: 'Интерактивная сюжетная игра в формате мессенджера.',
-  ageNotice: 'Все персонажи и изображённые лица в игре являются совершеннолетними (18+). Камила — 31 год, Лера — 24 года. Персонажи, события и переписки являются вымышленными.', version: 'Версия',
+  ageNotice: 'Все персонажи и изображённые лица в игре являются совершеннолетними (18+). Камила — 31 год, Лера — 24 года, Любовь — 31 год, Артём — 34 года. Персонажи, события, документы и переписки являются вымышленными.', version: 'Версия',
   back: 'Назад', statusNew: 'новая история', unread: 'непрочитанных', noMessages: 'Вы начинаете этот разговор.',
   earlier: 'Более ранние сообщения скрыты для производительности', chapter: 'Глава', theme: 'Тема', midnight: 'Полночь', violet: 'Фиолетовый туман',
   themeReward: 'Открыть тему за рекламу', themeUnlocked: 'Тема открыта', adNote: 'Основная история всегда доступна без рекламы.',
@@ -29,6 +29,7 @@ const ru = {
   loadingSave: 'Загрузка прогресса', loadingMigration: 'Обновление сохранения', loadingLocalization: 'Подготовка перевода',
   loadingDialogues: 'Проверка историй', loadingCriticalAssets: 'Загрузка интерфейса', loadingApp: 'Запуск приложения', loadingReady: 'Готово',
   stickyStatus: 'Sticky status', fullscreen: 'Полный экран', getHint: 'Получить намёк', photoLoadError: 'Фото не загрузилось', photoRetry: 'Повторить',
+  attachmentOpen: 'Открыть вложение', attachmentClose: 'Закрыть', attachmentSource: 'Источник', forwarded: 'Переслано', document: 'Документ', chatScreenshot: 'Скриншот переписки', evidence: 'Доказательство',
 };
 
 type UiSchema = { [Key in keyof typeof ru]: string };
@@ -48,7 +49,7 @@ const en: UiSchema = {
   cancel: 'Cancel', restart: 'Restart', blockedTitle: 'You have been blocked', storyComplete: 'Story complete',
   endingOf: 'Ending', of: 'of', hint: '▶ Ad → get a hint', hintUnavailable: 'Ad is unavailable right now',
   aboutTitle: 'Just Between Us', aboutText: 'An interactive story game presented as a messenger.',
-  ageNotice: 'All characters and persons depicted in the game are adults (18+). Camila is 31 and Lera is 24. The characters, events, and conversations are fictional.', version: 'Version',
+  ageNotice: 'All characters and persons depicted in the game are adults (18+). Camila is 31, Lera is 24, Lyubov is 31, and Artyom is 34. The characters, events, documents, and conversations are fictional.', version: 'Version',
   back: 'Back', statusNew: 'new story', unread: 'unread', noMessages: 'You begin this conversation.',
   earlier: 'Earlier messages hidden for performance', chapter: 'Chapter', theme: 'Theme', midnight: 'Midnight', violet: 'Violet haze',
   themeReward: 'Unlock theme with ad', themeUnlocked: 'Theme unlocked', adNote: 'The main story is always available without ads.',
@@ -60,6 +61,7 @@ const en: UiSchema = {
   loadingSave: 'Loading progress', loadingMigration: 'Updating save', loadingLocalization: 'Preparing language',
   loadingDialogues: 'Validating stories', loadingCriticalAssets: 'Loading interface', loadingApp: 'Starting application', loadingReady: 'Ready',
   stickyStatus: 'Sticky status', fullscreen: 'Fullscreen', getHint: 'Get a hint', photoLoadError: 'Photo could not load', photoRetry: 'Retry',
+  attachmentOpen: 'Open attachment', attachmentClose: 'Close', attachmentSource: 'Source', forwarded: 'Forwarded', document: 'Document', chatScreenshot: 'Chat screenshot', evidence: 'Evidence',
 };
 
 const ui: Record<UiLanguage, UiSchema> = { ru, en };

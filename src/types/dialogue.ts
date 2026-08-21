@@ -42,11 +42,44 @@ export type MessageKind =
   | 'statusChanged'
   | 'avatarChanged'
   | 'delay'
-  | 'photo';
+  | 'photo'
+  | 'attachment';
+
+export type StoryAttachmentType = 'photo' | 'chat_screenshot' | 'document' | 'forwarded_message';
+
+export interface StoryAttachmentEntry {
+  id: string;
+  author: string;
+  text: string;
+  timestamp?: string;
+}
+
+export interface StoryAttachmentField {
+  label: string;
+  value: string;
+  emphasis?: boolean;
+}
+
+export interface StoryAttachment {
+  id: string;
+  type: StoryAttachmentType;
+  title: string;
+  subtitle?: string;
+  source: string;
+  sourceTimestamp?: string;
+  asset?: string;
+  alt?: string;
+  entries?: StoryAttachmentEntry[];
+  fields?: StoryAttachmentField[];
+  actionLabel?: string;
+  storyPurpose: string;
+  promoAllowed: false;
+  adultCharacters: boolean;
+}
 
 export interface ScriptMessage {
   id: string;
-  sender: 'character' | 'system';
+  sender: 'player' | 'character' | 'system';
   text?: string;
   kind?: MessageKind;
   delayMs?: number;
@@ -57,6 +90,7 @@ export interface ScriptMessage {
   quoteSourceId?: string;
   image?: string;
   alt?: string;
+  attachment?: StoryAttachment;
   conditions?: Conditions;
 }
 
@@ -154,6 +188,7 @@ export interface TranscriptMessage {
   quote?: string;
   image?: string;
   alt?: string;
+  attachment?: StoryAttachment;
 }
 
 export interface DialogueProgress {
